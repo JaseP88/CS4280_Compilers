@@ -1,0 +1,11 @@
+Assume you need an application that operates on two kinds of data types: T1 and T2. Both T1 and T2 need to be defined with typedef and used across the application.
+
+Assume you need some functions to operate on some data (assuming the C language): f1T1() and f2T1() operating on T1 and f1T2() operating on T2. Exact interface is not important.
+
+Assume a helper function f1T1Helper() and helper integer intT1Helper to help the functions operating on T1 (helpers are not available globally).
+
+Assume global data g1 and g2 of int type.
+
+Assume the main creates a variable of type T1 and then operates on it. T2 is not needed in main, but it is needed in f1T2().
+
+Given this, and disregarding other details, design all files needed. Use inclusion-prevention. For each file you have, show file name and important elements, disregarding other details such as interfaces and function implementations. Submit files, each file with its name.
