@@ -4,10 +4,10 @@ CFLAGS = -g
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(CPPFLAGS) $< -o $@
 
-all: scanner
+all: proj1
 
-scanner: main.o 
-	$(CC) -o $@ $(CFLAGS) main.o 
+proj1: main.o scanner.o driver.o
+	$(CC) -o $@ $(CFLAGS) main.o scanner.o driver.o
 
 clean:
 	rm -f scanner

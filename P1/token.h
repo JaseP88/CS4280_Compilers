@@ -28,7 +28,7 @@ typedef enum tokenID {
 	LftBracket_Tk, RgtBracket_Tk
 } tokenID;
 
-char *tokenNames[tokens_] = {"End of File", "Identifier", 
+extern char *tokenNames[tokens_] = {"End of File", "Identifier", 
 	"Numbers", 
 
 	"Begin Keyword", "End Keyword", "Start Keyword",
