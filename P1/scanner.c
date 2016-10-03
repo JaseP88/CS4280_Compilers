@@ -6,22 +6,18 @@
 #include "driver.h"
 #include "scanner.h"
 
-static int line_num;
-static char line_str[1024];
+#define buffersize 256
 
-void filter () {
+int line_num = 0;
+char line_str[buffersize];
+
+
+/* this method stores the read line into an array buffer line_str
+	and filters out specific keys, changing it to WS
+	filter returns 1 if fine -1 if error */
+int filter (char *filename, int line) {
+
 	int i;
-
-	for (i=0; i<sizeof(line_str); i++)
-		if (line_str[i] == '\n')
-			line_str[i] =' ';
-		else if (line_str[i] == '#')
-			line_str[i] = ' ';
-}
-
-
-int scan (char *filename, int line) {
-
 	int count = 0;
 	FILE *file;
 
@@ -31,7 +27,8 @@ int scan (char *filename, int line) {
 		return -1;
 	}
 
-	/* reads specific line of a file */
+	/* reads specific line of a file and store in string buffer 
+		fgets adds /0 at the end, reads at least size-1 */
 	while (fgets(line_str, sizeof(line_str), file) != NULL) {
 
 		if (count == line)
@@ -40,12 +37,170 @@ int scan (char *filename, int line) {
 			count++;
 	}
 
-	filter();
+	/* filters out # and newlines */
+	for (i=0; i<sizeof(line_str); i++)
+		if (line_str[i] == '\n')
+			line_str[i] =' ';
+		else if (line_str[i] == '#')
+			line_str[i] = ' ';
 
-	printf("%s", line_str);
+	printf("%s", line_str); //testprintf
 
 	fclose(file);
-	return 0;
+	return 1;
+}
+
+
+tlk scan(int index) {
+	int i;
+	keys k;
+
+	/* read the first line */
+	//filter(filename, line_num);
+
+	//for (i=0; i<buffersize; i++) {
+
+		/* if buffer hits the \0 then no more chars in buffer */
+		if(line_str[index] == '\0')
+			return Eof_Tk
+
+		/* switch case to determine the keys to use for table*/
+		switch (line_str[index]) {
+			case 'a':
+			case 'b':
+			case 'c':
+			case 'd':
+			case 'e':
+			case 'f':
+			case 'g':
+			case 'h':
+			case 'i':
+			case 'j':
+			case 'k':
+			case 'l':
+			case 'm':
+			case 'n':
+			case 'o':
+			case 'p':
+			case 'q':
+			case 'r':
+			case 's':
+			case 't':
+			case 'u':
+			case 'v':
+			case 'w':
+			case 'x':
+			case 'y':
+			case 'z':
+			case 'A':
+			case 'B':
+			case 'C':
+			case 'D':
+			case 'E':
+			case 'F':
+			case 'G':
+			case 'H':
+			case 'I':
+			case 'J':
+			case 'K':
+			case 'L':
+			case 'M':
+			case 'N':
+			case 'O':
+			case 'P':
+			case 'Q':
+			case 'R':
+			case 'S':
+			case 'T':
+			case 'U':
+			case 'V':
+			case 'W':
+			case 'X':
+			case 'Y':
+			case 'Z':
+				k = character;
+				break;
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+			case '0':
+				k = digit;
+				break;
+			case ' ':
+				k = WS;
+				break;
+			case '=':
+				k = equal;
+				break;
+			case '!':
+				k = excla;
+				break;
+			case '<':
+				k = lftangle;
+				break;
+			case '>':
+				k = rgtangle;
+				break;
+			case ':':
+				k = colon;
+				break;
+			case '+':
+				k = plus;
+				break;
+			case '-':
+				k = minus;
+				break;
+			case '*':
+				k = aster;
+				break;
+			case '/':
+				k = bckslash;
+				break;
+			case '&':
+				k = amper;
+				break;
+			case '%':
+				k = percent;
+				break;
+			case '.':
+				k = period;
+				break;
+			case '(':
+				k = lftparen;
+				break;
+			case ')':
+				k = rgtparen;
+				break;
+			case ',':
+				k = comma;
+				break;
+			case '{':
+				k = lftbrace;
+				break;
+			case  '}':
+				k = rgtbrace;
+				break;
+			case ';':
+				k = semi;
+				break;
+			case '[':
+				k = lftbracket;
+				break;
+			case ']':
+				k = rgtbracket;
+				break;
+			default:
+				fprintf(stderr,"Error key not found\n");
+
+
+		}
+	
 }
 
 

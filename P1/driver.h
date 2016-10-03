@@ -19,7 +19,7 @@ s21, s22, s23, s24, s25, s26, s27, s28, s29, s30
 extern int table[state_][chars_];
 
 
-tk FADriver(); //driver prototype
+tlk FADriver(); //driver prototype
 
 
 #endif
