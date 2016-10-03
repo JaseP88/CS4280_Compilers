@@ -20,7 +20,7 @@ typedef enum tokenID {
 	BkSlash_Tk, Amper_Tk, Prcnt_Tk,
 
 	/* Relationsal Operators */
-	Eq_Tk, Lt_tk, Gt_tk, DnEq_Tk, Lt_Eq_Tk, Gt_Eq_Tk,
+	Eq_Tk, Lt_Tk, Gt_Tk, DnEq_Tk, Lt_Eq_Tk, Gt_Eq_Tk,
 
 	/* Delimiters Tokens */
 	Period_Tk, LftParen_Tk, RgtParen_Tk, Comma_Tk,
@@ -34,7 +34,8 @@ extern char *tokenString[];
 typedef struct tolken_struct {
 	tokenID tk_Id;
 	char *tk_inst;
-	int line_num;
+	int line;
+	int error = 0;
 } tlk;
 
 #endif

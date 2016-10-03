@@ -1,11 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "driver.h"
+#include "token.h"
+#include "scanner.h"
 
-	/* FSA table */
-	int table[state_][chars_] = {
+#define Error -1
+#define Final 1000
 
-/*s1*/	{s2, s3, Eof_Tk, s1, s4 , -1, s11, s8, s14, s29, s15, s16, s17, s18, s19, s20, s21, s22, s23, s24, s25, s26, s27, s28},
+/* FSA table */
+int table[state_][keys_] = {
+
+/*s1*/	{s2, s3, 1000, s1, s4 , -1, s11, s8, s14, s29, s15, s16, s17, s18, s19, s20, s21, s22, s23, s24, s25, s26, s27, s28},
 /*s2*/	{s2, s2, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001, 1001},
 /*s3*/	{-1, s3, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002, 1002},
 /*s4*/	{1003, 1003, 1003, 1003, s5, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003, 1003},
@@ -38,10 +44,250 @@
 };
 
 
-/*
-tk FADriver() {
+/* Driver function for FSA table */
+tlk FADriver(int st, int key) {
+
+	tlk token;
+	char *s;
+
+	int nextState;
+	int currState = table[st][key];
+
+	//while (currState < Final && currState > Error) {
+
+		nextState = table[currState][key];
+
+		if (nextState <= Error)
+			//report error
+
+		else if (nextState >= Final) 
+			switch(nextState) {
+				
+				/* all the final cases */
+				case 1000:
+					token.tk_Id = Eof_Tk;
+					token.tk_inst = tokenString[0];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1001:
+					token.tk_Id = Identifier_Tk;
+					token.tk_inst = tokenString[1];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1002:
+					token.tk_Id = IntLiteral_Tk;
+					token.tk_inst = tokenString[2];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1003:
+					token.tk_Id = Eq_Tk;
+					token.tk_inst = tokenString[25];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1004:
+					token.tk_Id = DblEq_Tk;
+					token.tk_inst = tokenString[18];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1005:
+					token.tk_Id = DnEq_Tk;
+					token.tk_inst = tokenString[28];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+				
+				case 1006:
+					token.tk_Id = Lt_Tk;
+					token.tk_inst = tokenString[26];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1007:
+					token.tk_Id = Lt_Eq_Tk;
+					token.tk_inst = tokenString[29];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1008:
+					token.tk_Id = Gt_Tk;
+					token.tk_inst = tokenString[27];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1009:
+					token.tk_Id = Gt_Eq_Tk;
+					token.tk_inst = tokenString[30];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1010:
+					token.tk_Id = Cln_Tk;
+					token.tk_inst = tokenString[17];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1011:
+					token.tk_Id = Minus_Tk;
+					token.tk_inst = tokenString[20];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1012:
+					token.tk_Id = Ast_Tk;
+					token.tk_inst = tokenString[21];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1013:
+					token.tk_Id = BkSlash_Tk;
+					token.tk_inst = tokenString[22];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1014:
+					token.tk_Id = Amper_Tk;
+					token.tk_inst = tokenString[23];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1015:
+					token.tk_Id = Prcnt_Tk;
+					token.tk_inst = tokenString[24];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1016:
+					token.tk_Id = Period_Tk;
+					token.tk_inst = tokenString[31];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1017:
+					token.tk_Id = LftParen_Tk;
+					token.tk_inst = tokenString[32];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1018:
+					token.tk_Id = RgtParen_Tk;
+					token.tk_inst = tokenString[33];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1019:
+					token.tk_Id = Comma_Tk;
+					token.tk_inst = tokenString[34];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1020:
+					token.tk_Id = LftBrace_Tk;
+					token.tk_inst = tokenString[35];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1021:
+					token.tk_Id = RgtBrace_Tk;
+					token.tk_inst = tokenString[36];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1022:
+					token.tk_Id = SemiColon_Tk;
+					token.tk_inst = tokenString[37];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1023:
+					token.tk_Id = LftBracket_Tk;
+					token.tk_inst = tokenString[38];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1024:
+					token.tk_Id = RgtBracket_Tk;
+					token.tk_inst = tokenString[39];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				case 1025:
+					token.tk_Id = Plus_Tk;
+					token.tk_inst = tokenString[19];
+					token.line = line_num;
+					state = 0; //reset the state
+					return token;
+					break;
+
+				default:
+					fprintf(stderr,"nextState error\n");
+					state = 0; //reset the state
+					break;
+			}
+
+		else {
+
+			state = nextState;
+			//append string?
+
+		}
+
+
+	//}
 
 
 
-
-}*/
+}

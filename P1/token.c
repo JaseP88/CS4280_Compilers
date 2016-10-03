@@ -11,13 +11,13 @@ char *tokenString[] = {"End of File", "Identifier",
 
 	"Colon Operator", "Double Equal Operator", "Plus Operator",
 	"Minus Operator", "Asterisk Operator", "Backslash Operator",
-	"Ampersand Operator", "Percent Operator",
+	"Ampersand Operator", "Percent Operator", 
 
 	"Equal", "Less Than", "Greater Than", "Does Not Equal",
-	"Less Than Or Equal", "Greater Than Or Equal",
+	"Less Than Or Equal", "Greater Than Or Equal", 
 
 	"Period", "Left Parentheses", "Right Parentheses", 
 	"Comma", "Left Brace", "Right Brace", "Semicolon",
-	"Left Bracket", "Right Bracket"
+	"Left Bracket", "Right Bracket" 
 
 };

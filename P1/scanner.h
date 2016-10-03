@@ -6,7 +6,7 @@
 
 /* contains the keys that can be read */
 typedef enum keys{
-	character, digit, WS, equal, excla, lftangle, rgtangle, colon,
+	letter, digit, end, WS, equal, excla, lftangle, rgtangle, colon,
 	plus, minus, aster, bckslash, amper, percent, period, lftparen,
 	rgtparen, comma, lftbrace, rgtbrace, semi, lftbracket, rgtbracket,
 	dollar, pound, at, question, singleq, doubleq, underscore,
@@ -15,10 +15,10 @@ typedef enum keys{
 
 extern char line_str[];
 extern int line_num;
+extern int state;
+extern keys k;
 
-
-//void filter();
 int filter(char *filename, int line);
-tlk scan();
+tlk scan(int index);
 
 #endif

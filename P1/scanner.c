@@ -6,10 +6,13 @@
 #include "driver.h"
 #include "scanner.h"
 
-#define buffersize 256
+#define Buffersize 256	//define the buffersize a line
 
 int line_num = 0;
-char line_str[buffersize];
+char line_str[Buffersize];
+
+int state = s1; 	//set state to initial also keep track of currState
+keys k = 0;
 
 
 /* this method stores the read line into an array buffer line_str
@@ -44,7 +47,8 @@ int filter (char *filename, int line) {
 		else if (line_str[i] == '#')
 			line_str[i] = ' ';
 
-	printf("%s", line_str); //testprintf
+	//printf("%s", line_str); //testprintf
+	//printf("state is %d\n",st);
 
 	fclose(file);
 	return 1;
@@ -52,154 +56,156 @@ int filter (char *filename, int line) {
 
 
 tlk scan(int index) {
-	int i;
-	keys k;
+	tlk token;
 
-	/* read the first line */
-	//filter(filename, line_num);
-
-	//for (i=0; i<buffersize; i++) {
-
-		/* if buffer hits the \0 then no more chars in buffer */
-		if(line_str[index] == '\0')
-			return Eof_Tk
-
-		/* switch case to determine the keys to use for table*/
-		switch (line_str[index]) {
-			case 'a':
-			case 'b':
-			case 'c':
-			case 'd':
-			case 'e':
-			case 'f':
-			case 'g':
-			case 'h':
-			case 'i':
-			case 'j':
-			case 'k':
-			case 'l':
-			case 'm':
-			case 'n':
-			case 'o':
-			case 'p':
-			case 'q':
-			case 'r':
-			case 's':
-			case 't':
-			case 'u':
-			case 'v':
-			case 'w':
-			case 'x':
-			case 'y':
-			case 'z':
-			case 'A':
-			case 'B':
-			case 'C':
-			case 'D':
-			case 'E':
-			case 'F':
-			case 'G':
-			case 'H':
-			case 'I':
-			case 'J':
-			case 'K':
-			case 'L':
-			case 'M':
-			case 'N':
-			case 'O':
-			case 'P':
-			case 'Q':
-			case 'R':
-			case 'S':
-			case 'T':
-			case 'U':
-			case 'V':
-			case 'W':
-			case 'X':
-			case 'Y':
-			case 'Z':
-				k = character;
-				break;
-			case '1':
-			case '2':
-			case '3':
-			case '4':
-			case '5':
-			case '6':
-			case '7':
-			case '8':
-			case '9':
-			case '0':
-				k = digit;
-				break;
-			case ' ':
-				k = WS;
-				break;
-			case '=':
-				k = equal;
-				break;
-			case '!':
-				k = excla;
-				break;
-			case '<':
-				k = lftangle;
-				break;
-			case '>':
-				k = rgtangle;
-				break;
-			case ':':
-				k = colon;
-				break;
-			case '+':
-				k = plus;
-				break;
-			case '-':
-				k = minus;
-				break;
-			case '*':
-				k = aster;
-				break;
-			case '/':
-				k = bckslash;
-				break;
-			case '&':
-				k = amper;
-				break;
-			case '%':
-				k = percent;
-				break;
-			case '.':
-				k = period;
-				break;
-			case '(':
-				k = lftparen;
-				break;
-			case ')':
-				k = rgtparen;
-				break;
-			case ',':
-				k = comma;
-				break;
-			case '{':
-				k = lftbrace;
-				break;
-			case  '}':
-				k = rgtbrace;
-				break;
-			case ';':
-				k = semi;
-				break;
-			case '[':
-				k = lftbracket;
-				break;
-			case ']':
-				k = rgtbracket;
-				break;
-			default:
-				fprintf(stderr,"Error key not found\n");
-
-
+	/* if buffer hits the \0 then no more chars in buffer 
+	if(line_str[index] == '\0') {
+		token.tk_Id = Eof_Tk;
+		token.tk_inst = tokenString[0];
+		token.line = line_num;
+		return token; //probably should not return EOF!!!!!!!!!!
+	}
+	*/
+	
+	/* switch case to determine the keys to use for FSAtable*/
+	switch (line_str[index]) {
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':
+		case 'g':
+		case 'h':
+		case 'i':
+		case 'j':
+		case 'k':
+		case 'l':
+		case 'm':
+		case 'n':
+		case 'o':
+		case 'p':
+		case 'q':
+		case 'r':
+		case 's':
+		case 't':
+		case 'u':
+		case 'v':
+		case 'w':
+		case 'x':
+		case 'y':
+		case 'z':
+		case 'A':
+		case 'B':
+		case 'C':
+		case 'D':
+		case 'E':
+		case 'F':
+		case 'G':
+		case 'H':
+		case 'I':
+		case 'J':
+		case 'K':
+		case 'L':
+		case 'M':
+		case 'N':
+		case 'O':
+		case 'P':
+		case 'Q':
+		case 'R':
+		case 'S':
+		case 'T':
+		case 'U':
+		case 'V':
+		case 'W':
+		case 'X':
+		case 'Y':
+		case 'Z':
+			k = letter;
+			break;
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+		case '0':
+			k = digit;
+			break;
+		case '\0'
+			k = end;
+			break;
+		case ' ':
+			k = WS;
+			break;
+		case '=':
+			k = equal;
+			break;
+		case '!':
+			k = excla;
+			break;
+		case '<':
+			k = lftangle;
+			break;
+		case '>':
+			k = rgtangle;
+			break;
+		case ':':
+			k = colon;
+			break;
+		case '+':
+			k = plus;
+			break;
+		case '-':
+			k = minus;
+			break;
+		case '*':
+			k = aster;
+			break;
+		case '/':
+			k = bckslash;
+			break;
+		case '&':
+			k = amper;
+			break;
+		case '%':
+			k = percent;
+			break;
+		case '.':
+			k = period;
+			break;
+		case '(':
+			k = lftparen;
+			break;
+		case ')':
+			k = rgtparen;
+			break;
+		case ',':
+			k = comma;
+			break;
+		case '{':
+			k = lftbrace;
+			break;
+		case  '}':
+			k = rgtbrace;
+			break;
+		case ';':
+			k = semi;
+			break;
+		case '[':
+			k = lftbracket;
+			break;
+		case ']':
+			k = rgtbracket;
+			break;
+		default:
+			fprintf(stderr,"Error key not found\n");
 		}
+
+	//call driver here
 	
 }
 
