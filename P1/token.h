@@ -28,26 +28,7 @@ typedef enum tokenID {
 	LftBracket_Tk, RgtBracket_Tk
 } tokenID;
 
-extern char *tokenNames[tokens_] = {"End of File", "Identifier", 
-	"Numbers", 
-
-	"Begin Keyword", "End Keyword", "Start Keyword",
-	"Stop Keyword", "Iff Keyword", "Loop Keyword", 
-	"Void Keyword", "Var Keyword", "Int Keyword", 
-	"Call Keyword", "Return Keyword", "Scan Keyword",
-	"Print Keyword", "Program Keyword", 
-
-	"Colon Operator", "Double Equal Operator", "Plus Operator",
-	"Minus Operator", "Asterisk Operator", "Backslash Operator",
-	"Ampersand Operator", "Percent Operator",
-
-	"Equal", "Less Than", "Greater Than", "Does Not Equal",
-	"Less Than Or Equal", "Greater Than Or Equal",
-
-	"Period", "Left Parentheses", "Right Parentheses", 
-	"Comma", "Left Brace", "Right Brace", "Semicolon",
-	"Left Bracket", "Right Bracket"};
-
+extern char *tokenString[];
 
 /* structure of the token */
 typedef struct tolken_struct {

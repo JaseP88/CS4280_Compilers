@@ -42,9 +42,7 @@ int scan (char *filename, int line) {
 
 	filter();
 
-	char *buff;
-	buff = line_str;
-	printf("%s", buff);
+	printf("%s", line_str);
 
 	fclose(file);
 	return 0;
