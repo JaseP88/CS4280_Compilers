@@ -51,13 +51,15 @@ tlk FADriver(int currState, int keyPassed) {
 	char *s;
 
 	int nextState;
+	int save;
+	save = table[currState][keyPassed];
 	
 	//while (currState < Final && currState > Error) {
 
 		nextState = table[currState][keyPassed];
 
 		if (nextState <= Error) {
-			fprintf(stderr,"error in nextState");
+			fprintf(stderr,"error in nextState\n");
 			token.error = 1;
 			return token;
 		}
@@ -91,6 +93,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[2];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -109,6 +113,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[18];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -117,6 +123,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[28];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 				
@@ -125,6 +133,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[26];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -133,6 +143,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[29];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -141,6 +153,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[27];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -149,6 +163,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[30];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -157,6 +173,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[17];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -165,6 +183,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[20];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -173,6 +193,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[21];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -181,6 +203,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[22];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -189,6 +213,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[23];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -197,6 +223,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[24];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -205,6 +233,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[31];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -213,6 +243,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[32];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -221,6 +253,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[33];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -229,6 +263,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[34];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -237,6 +273,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[35];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -245,6 +283,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[36];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -253,6 +293,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[37];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -261,6 +303,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[38];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -269,6 +313,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[39];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -277,6 +323,8 @@ tlk FADriver(int currState, int keyPassed) {
 					token.tk_inst = tokenString[19];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 

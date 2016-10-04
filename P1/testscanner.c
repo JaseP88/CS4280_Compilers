@@ -36,6 +36,8 @@ void testScan() {
 	tlk token;
 
 	filter("example.txt", 0);
+	
+
 	token = scan(0);
 	if (token.wait != 1 && token.error != 1) {
 		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
@@ -51,6 +53,34 @@ void testScan() {
 		printf("token error or wait\n");
 
 	token = scan(2);
+	if (token.wait != 1 && token.error != 1) {
+		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
+	}
+	else
+		printf("token error or wait\n");
+
+	token = scan(2);
+	if (token.wait != 1 && token.error != 1) {
+		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
+	}
+	else
+		printf("token error or wait\n");
+
+	token = scan(3);
+	if (token.wait != 1 && token.error != 1) {
+		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
+	}
+	else
+		printf("token error or wait\n");
+
+	token = scan(3);
+	if (token.wait != 1 && token.error != 1) {
+		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
+	}
+	else
+		printf("token error or wait\n");
+
+	token = scan(4);
 	if (token.wait != 1 && token.error != 1) {
 		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
 	}

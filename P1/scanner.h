@@ -16,6 +16,7 @@ typedef enum keys{
 extern char line_str[];
 extern int line_num;
 extern int state;
+extern int savedState;
 extern keys k;
 
 int filter(char *filename, int line);

@@ -12,6 +12,7 @@ int line_num = 0;
 char line_str[Buffersize];
 
 int state = s1; 	//set state to initial also keep track of currState
+int savedState = s1;
 keys k = 0;
 
 
