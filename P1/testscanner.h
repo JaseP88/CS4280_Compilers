@@ -8,5 +8,6 @@
 
 void testScan();
 int findmaxLine (char *filename);
+int findmaxChar();
 
 #endif

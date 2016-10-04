@@ -58,7 +58,7 @@ int filter (char *filename, int line) {
 
 tlk scan(int index) {
 	tlk token;
-	printf("%s\n", line_str); //testprintf
+	//printf("%s\n", line_str); //testprintf
 	/* if buffer hits the \0 then no more chars in buffer 
 	if(line_str[index] == '\0') {
 		token.tk_Id = Eof_Tk;

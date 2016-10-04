@@ -13,6 +13,8 @@ void testScan() {
 
 	int i, j;
 	int maxline;
+	int maxchar;
+	tlk token;
 
 	// first find the max line of the file 
 	maxline = findmaxLine("file.txt");
@@ -21,10 +23,14 @@ void testScan() {
 		filter("file.txt", i); //filter line i
 
 		for (j=0; j<BufferSize; j++) {
-			scan(j);
+			token = scan(j);
+			
+			if (token.wait != 1 && token.error != 1) {
+				printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
+				j--;
+			}
 
 		}
-
 
 	}
 
@@ -34,60 +40,25 @@ void testScan() {
 void testScan() {
 
 	tlk token;
+	int i;
+	int maxchar;
 
 	filter("example.txt", 0);
-	
+	maxchar = findmaxChar();
+	printf("max char is %d\n",maxchar);
+	printf("%s\n",line_str);
 
-	token = scan(0);
-	if (token.wait != 1 && token.error != 1) {
-		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
+	for(i=0; i<maxchar; i++) {
+		token = scan(i);
+		if (token.wait != 1 && token.error != 1) {
+			printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
+			i--;
+		}
 	}
-	else
-		printf("token error or wait\n");
-	
-	token = scan(1);
-	if (token.wait != 1 && token.error != 1) {
-		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
-	}
-	else
-		printf("token error or wait\n");
-
-	token = scan(2);
-	if (token.wait != 1 && token.error != 1) {
-		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
-	}
-	else
-		printf("token error or wait\n");
-
-	token = scan(2);
-	if (token.wait != 1 && token.error != 1) {
-		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
-	}
-	else
-		printf("token error or wait\n");
-
-	token = scan(3);
-	if (token.wait != 1 && token.error != 1) {
-		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
-	}
-	else
-		printf("token error or wait\n");
-
-	token = scan(3);
-	if (token.wait != 1 && token.error != 1) {
-		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
-	}
-	else
-		printf("token error or wait\n");
-
-	token = scan(4);
-	if (token.wait != 1 && token.error != 1) {
-		printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
-	}
-	else
-		printf("token error or wait\n");
 }
 
+
+/* function to find the max line of the file */
 int findmaxLine (char *filename) {
 
 	FILE *fp;
@@ -109,3 +80,23 @@ int findmaxLine (char *filename) {
   
   return lines;
 }
+
+/* function to find the max character in line_str buffer */
+int findmaxChar () {
+
+	int i;
+	int counter = 0;
+
+	for (i=0; i<BufferSize; i++) {
+		
+		if (line_str[i] != '\0') {
+			counter++;
+		}	
+		
+		else {
+			break;
+		}
+	}
+	return counter;
+}
+
