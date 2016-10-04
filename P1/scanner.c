@@ -57,7 +57,7 @@ int filter (char *filename, int line) {
 
 tlk scan(int index) {
 	tlk token;
-
+	printf("%s\n", line_str); //testprintf
 	/* if buffer hits the \0 then no more chars in buffer 
 	if(line_str[index] == '\0') {
 		token.tk_Id = Eof_Tk;
@@ -66,7 +66,7 @@ tlk scan(int index) {
 		return token; //probably should not return EOF!!!!!!!!!!
 	}
 	*/
-	
+
 	/* switch case to determine the keys to use for FSAtable*/
 	switch (line_str[index]) {
 		case 'a':
@@ -135,7 +135,7 @@ tlk scan(int index) {
 		case '0':
 			k = digit;
 			break;
-		case '\0'
+		case '\0':
 			k = end;
 			break;
 		case ' ':
@@ -203,31 +203,9 @@ tlk scan(int index) {
 			break;
 		default:
 			fprintf(stderr,"Error key not found\n");
-		}
-
-	//call driver here
-	
-}
-
-
-int findmaxLine (char *filename) {
-
-	FILE *fp;
-	char ch;
-	int lines = 0;
-
-	if ((fp=fopen(filename,"r")) == NULL) {
-		fprintf(stderr,"error opening file %s, check to see if file exists\n",filename);
-		return -1;
 	}
 
-	while (!feof(fp)) {
-    	ch =  fgetc(fp);
-    	if (ch == '\n')
-      		lines++;
-  	}
-
-  fclose(fp);
-  
-  return lines;
+	//call driver here
+	token = FADriver(state,k);
+	return token;
 }

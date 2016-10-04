@@ -45,20 +45,22 @@ int table[state_][keys_] = {
 
 
 /* Driver function for FSA table */
-tlk FADriver(int st, int key) {
+tlk FADriver(int currState, int keyPassed) {
 
 	tlk token;
 	char *s;
 
 	int nextState;
-	int currState = table[st][key];
-
+	
 	//while (currState < Final && currState > Error) {
 
-		nextState = table[currState][key];
+		nextState = table[currState][keyPassed];
 
-		if (nextState <= Error)
-			//report error
+		if (nextState <= Error) {
+			fprintf(stderr,"error in nextState");
+			token.error = 1;
+			return token;
+		}
 
 		else if (nextState >= Final) 
 			switch(nextState) {
@@ -69,6 +71,8 @@ tlk FADriver(int st, int key) {
 					token.tk_inst = tokenString[0];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -77,6 +81,8 @@ tlk FADriver(int st, int key) {
 					token.tk_inst = tokenString[1];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -93,6 +99,8 @@ tlk FADriver(int st, int key) {
 					token.tk_inst = tokenString[25];
 					token.line = line_num;
 					state = 0; //reset the state
+					token.wait=0;
+					token.error=0;
 					return token;
 					break;
 
@@ -281,6 +289,8 @@ tlk FADriver(int st, int key) {
 		else {
 
 			state = nextState;
+			token.wait = 1;
+			return token;
 			//append string?
 
 		}
@@ -289,5 +299,5 @@ tlk FADriver(int st, int key) {
 	//}
 
 
-
 }
+

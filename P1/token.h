@@ -35,7 +35,8 @@ typedef struct tolken_struct {
 	tokenID tk_Id;
 	char *tk_inst;
 	int line;
-	int error = 0;
+	int error;
+	int wait;
 } tlk;
 
 #endif
