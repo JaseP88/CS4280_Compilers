@@ -79,7 +79,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 
 			case 1001:
 				if (strncmp(strng, tokenString[3],5) == 0) {
-					printf("string:%ssize:%lu\n",strng,sizeof(strng));
 					token.tk_Id = Bgn_Tk;
 					token.tk_inst = tokenString[3];
 					token.line = line_num;
@@ -105,7 +104,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				}
 
 				else {
-					printf("string:%ssize:%lu\n",strng,sizeof(strng));
 					token.tk_Id = Identifier_Tk;
 					token.tk_inst = tokenString[1];
 					token.line = line_num;
