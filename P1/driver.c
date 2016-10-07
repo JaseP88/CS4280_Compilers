@@ -77,12 +77,12 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				return token;
 				break;
 
+			/* speacial case 1001, check if identifier string is keyword */
 			case 1001:
 				if (strncmp(strng, tokenString[3],5) == 0) {
 					token.tk_Id = Bgn_Tk;
 					token.tk_inst = tokenString[3];
 					token.line = line_num;
-					//clearString();
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
@@ -357,7 +357,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				break;
 
 			default:
-				fprintf(stderr,"no Final code found\n");
+				fprintf(stderr,"No Final Code Found\n");
 				state = 0; //reset the state
 				break;
 		}
@@ -379,6 +379,8 @@ tlk FADriver(int currState, int keyPassed, char c) {
 Should be ok since conditionals cover all the range */
 	return token;
 }
+
+
 
 void clearString() {
 	int i;
