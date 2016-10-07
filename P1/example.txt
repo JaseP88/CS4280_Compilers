@@ -1,1 +1,1 @@
-Begin Begin Begin Return Return @Begin
+Begin hello

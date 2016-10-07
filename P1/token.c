@@ -1,6 +1,6 @@
 #include "token.h"
 
-char *tokenString[] = {"End of File", "Identifier", 
+char *tokenString[] = {"End of File", "Identifier:", 
 	"Numbers", 
 
 	"Begin", "End", "Start",
