@@ -10,6 +10,6 @@ proj1: main.o scanner.o driver.o token.o testscanner.o
 	$(CC) -o $@ $(CFLAGS) main.o scanner.o driver.o token.o testscanner.o
 
 clean:
-	rm -f scanner
+	rm -f proj1
 	rm -f *.o
 	

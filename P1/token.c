@@ -3,11 +3,11 @@
 char *tokenString[] = {"End of File", "Identifier", 
 	"Numbers", 
 
-	"Begin Keyword", "End Keyword", "Start Keyword",
-	"Stop Keyword", "Iff Keyword", "Loop Keyword", 
-	"Void Keyword", "Var Keyword", "Int Keyword", 
-	"Call Keyword", "Return Keyword", "Scan Keyword",
-	"Print Keyword", "Program Keyword", 
+	"Begin", "End", "Start",
+	"Stop", "Iff", "Loop", 
+	"Void", "Var", "Int", 
+	"Call", "Return", "Scan",
+	"Print", "Program", 
 
 	"Colon Operator", "Double Equal Operator", "Plus Operator",
 	"Minus Operator", "Asterisk Operator", "Backslash Operator",

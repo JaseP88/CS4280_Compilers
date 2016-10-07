@@ -42,11 +42,13 @@ void testScan() {
 	tlk token;
 	int i;
 	int maxchar;
+	int maxline;
 
+	//put line loop here
 	filter("example.txt", 0);
 	maxchar = findmaxChar();
-	printf("max char is %d\n",maxchar);
-	printf("%s\n",line_str);
+	//printf("max char is %d\n",maxchar);
+	//printf("%s\n",line_str);
 
 	for(i=0; i<maxchar; i++) {
 		token = scan(i);

@@ -11,8 +11,7 @@
 int line_num = 0;
 char line_str[Buffersize];
 
-int state = s1; 	//set state to initial also keep track of currState
-int savedState = s1;
+int state = s1; //set state to initial also keep track of currState
 keys k = 0;
 
 
@@ -21,7 +20,7 @@ keys k = 0;
 	filter returns 1 if fine -1 if error */
 int filter (char *filename, int line) {
 
-	int i;
+	int i, cursor;
 	int count = 0;
 	FILE *file;
 
@@ -40,16 +39,26 @@ int filter (char *filename, int line) {
 		else
 			count++;
 	}
-
-	/* filters out # and newlines */
-	for (i=0; i<sizeof(line_str); i++)
-		if (line_str[i] == '\n')
-			line_str[i] =' ';
-		else if (line_str[i] == '#')
+	
+	/* filters out # and newlines and comments*/
+	for (i=0; i<sizeof(line_str); i++) {
+		if (line_str[i] == '@') {
 			line_str[i] = ' ';
-
-	//printf("%s", line_str); //testprintf
-	//printf("state is %d\n",st);
+			cursor = i+1;
+			while (1) {
+				if (line_str[cursor] != ' ') {
+					line_str[cursor] = ' ';
+					//printf("%s\n", line_str); //testprintf
+					cursor++;
+				}
+				else
+					break;
+			}
+			
+		}
+	
+	}
+	//printf("%s\n", line_str); //testprintf
 
 	fclose(file);
 	return 1;
@@ -58,84 +67,30 @@ int filter (char *filename, int line) {
 
 tlk scan(int index) {
 	tlk token;
-	//printf("%s\n", line_str); //testprintf
-	/* if buffer hits the \0 then no more chars in buffer 
-	if(line_str[index] == '\0') {
-		token.tk_Id = Eof_Tk;
-		token.tk_inst = tokenString[0];
-		token.line = line_num;
-		return token; //probably should not return EOF!!!!!!!!!!
-	}
-	*/
 
 	/* switch case to determine the keys to use for FSAtable*/
 	switch (line_str[index]) {
-		case 'a':
-		case 'b':
-		case 'c':
-		case 'd':
-		case 'e':
-		case 'f':
-		case 'g':
-		case 'h':
-		case 'i':
-		case 'j':
-		case 'k':
-		case 'l':
-		case 'm':
-		case 'n':
-		case 'o':
-		case 'p':
-		case 'q':
-		case 'r':
-		case 's':
-		case 't':
-		case 'u':
-		case 'v':
-		case 'w':
-		case 'x':
-		case 'y':
+		case 'a': case 'b': case 'c': case 'd': case 'e':
+		case 'f': case 'g': case 'h': case 'i': case 'j':
+		case 'k': case 'l': case 'm': case 'n': case 'o':
+		case 'p': case 'q': case 'r': case 's': case 't':
+		case 'u': case 'v': case 'w': case 'x': case 'y':
 		case 'z':
-		case 'A':
-		case 'B':
-		case 'C':
-		case 'D':
-		case 'E':
-		case 'F':
-		case 'G':
-		case 'H':
-		case 'I':
-		case 'J':
-		case 'K':
-		case 'L':
-		case 'M':
-		case 'N':
-		case 'O':
-		case 'P':
-		case 'Q':
-		case 'R':
-		case 'S':
-		case 'T':
-		case 'U':
-		case 'V':
-		case 'W':
-		case 'X':
-		case 'Y':
+		case 'A': case 'B': case 'C': case 'D': case 'E':
+		case 'F': case 'G': case 'H': case 'I': case 'J':
+		case 'K': case 'L': case 'M': case 'N': case 'O':
+		case 'P': case 'Q': case 'R': case 'S': case 'T':
+		case 'U': case 'V': case 'W': case 'X': case 'Y':
 		case 'Z':
 			k = letter;
 			break;
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9':
+		
+		case '1': case '2': case '3': case '4':case '5': 
+		case '6': case '7':case '8': case '9':
 		case '0':
 			k = digit;
 			break;
+		
 		case '\0':
 			k = end;
 			break;
@@ -202,11 +157,16 @@ tlk scan(int index) {
 		case ']':
 			k = rgtbracket;
 			break;
+		case '\n':
+			line_str[index] = ' ';	//pass WS to Driver method
+			k = WS;
+			break;
 		default:
 			fprintf(stderr,"Error key not found\n");
 	}
 
 	//call driver here
-	token = FADriver(state,k);
+	token = FADriver(state,k,line_str[index]);
 	return token;
 }
+

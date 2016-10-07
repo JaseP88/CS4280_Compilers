@@ -35,9 +35,11 @@ typedef struct tolken_struct {
 	tokenID tk_Id;
 	char *tk_inst;
 	int line;
-	int error;
-	int wait;
+
+	/* these 2 last properties holds extra information on the token.
+	if error set to 1, if waiting set to 1*/
+	int error;	//if token has an error
+	int wait;	//if token is waiting to be pieced together
 } tlk;
 
 #endif
-
