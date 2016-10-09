@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "testscanner.h"
+#include "scanner.h"
 
 #define filenameSize 50
 
@@ -31,7 +32,7 @@ int main (int argc, char *argv[]) {
 	/* read from keyboard */
 	else {
 
-
+		testScan2();
 
 	}
 

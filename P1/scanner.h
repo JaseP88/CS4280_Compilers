@@ -20,8 +20,10 @@ extern keys k;
 
 
 int filter(char *filename, int line);
+void filter2();
 tlk scan(int index);
 int findmaxLine (char *filename);
 int findmaxChar();
+
 
 #endif

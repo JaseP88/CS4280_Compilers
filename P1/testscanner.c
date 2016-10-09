@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "scanner.h"
+#include "token.h"
 #include "testscanner.h"
 
 #define BufferSize 256
@@ -30,11 +31,12 @@ void testScan(char *filename) {
 			if (token.wait != 1 && token.error != 1) {
 				printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
 				
+				/* if the token is EOF break out of the back tracing route */
 				if (token.tk_Id == 0) {
 					printf("EOF reached\n");
 					break;
 				}
-				
+
 				else
 					j--;	//back tracing
 			}
@@ -45,69 +47,31 @@ void testScan(char *filename) {
 
 }
 
-/*
-void testScan(char *filename) {
-
+void testScan2() {
+	int maxchar, j;
 	tlk token;
-	int i;
-	int maxchar;
-	int maxline;
+	line_num = 0;
+	while (fgets(line_str, 256, stdin) != NULL) {
+		line_num++;
+		maxchar = findmaxChar();
+		filter2();
+		for (j=0; j<maxchar; j++) {
+			token = scan(j);
 
-	//put line loop here
-	filter(filename, 0);
-	maxchar = findmaxChar();
-	//printf("max char is %d\n",maxchar);
-	//printf("%s\n",line_str);
+			
+			if (token.wait != 1 && token.error != 1) {
+				printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+				
+				/* if the token is EOF break out of the back tracing route */
+				if (token.tk_Id == 0) {
+					printf("EOF reached\n");
+					break;
+				}
 
-	for(i=0; i<maxchar; i++) {
-		token = scan(i);
-		if (token.wait != 1 && token.error != 1) {
-			printf("tokenID:%d \n tokenInst:%s \n line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
-			i--;
+				else
+					j--;	//back tracing
+			}
+
 		}
 	}
 }
-*/
-
-/* function to find the max line of the file being read *//*
-int findmaxLine (char *filename) {
-
-	FILE *fp;
-	char ch;
-	int lines = 0;
-
-	if ((fp=fopen(filename,"r")) == NULL) {
-		fprintf(stderr,"error opening file %s, check to see if file exists\n",filename);
-		return -1;
-	}
-
-	while (!feof(fp)) {
-    	ch =  fgetc(fp);
-    	if (ch == '\n')
-      		lines++;
-  	}
-
-  fclose(fp);
-  
-  return lines;
-}*/
-
-/* function to find the max character in line_str buffer *//*
-int findmaxChar () {
-
-	int i;
-	int counter = 0;
-
-	for (i=0; i<BufferSize; i++) {
-		
-		if (line_str[i] != '\0') {
-			counter++;
-		}	
-		
-		else {
-			break;
-		}
-	}
-	return counter;
-}
-*/

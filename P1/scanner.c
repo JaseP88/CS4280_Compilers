@@ -65,9 +65,8 @@ int filter (char *filename, int line) {
 	}
 
 	/* simulates an EOF at the end of the file */
-	int t;
-	t = maxline - 1;
-	if (line == t) {
+	
+	if (line == maxline-1) {
 		maxchar = findmaxChar();
 		line_str[maxchar] = -1;
 	}
@@ -77,6 +76,29 @@ int filter (char *filename, int line) {
 	return 1;
 }
 
+void filter2() {
+	int cursor, i;
+
+	for (i=0; i<sizeof(line_str); i++) {
+		if (line_str[i] == '@') {
+			line_str[i] = ' ';
+			cursor = i+1;
+			while (1) {
+				
+				if (line_str[cursor] == ' ' || line_str[cursor] == '\n' || line_str[cursor] == '\0') 
+					break;
+				
+				else {
+					line_str[cursor] = ' ';
+					cursor++;
+				}
+			}
+			
+		}
+	
+	}
+
+}
 
 /* scan function: scans each the stored characters in line_str buffer and pass
 	the define key and character value to the FSAdriver method */
@@ -179,6 +201,7 @@ tlk scan(int index) {
 			break;
 		default:
 			fprintf(stderr,"Error key not found. Characters %c not in alphabet\n",line_str[index]);
+			exit(1);
 	}
 
 	//call driver here
