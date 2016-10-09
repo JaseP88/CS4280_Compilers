@@ -13,13 +13,15 @@ typedef enum keys{
 	fwdslash, tilde, bckquote, vertical
 } keys;
 
-extern char line_str[];
+extern char line_str[];	//string buffer that holds all the text in a line. Size 256
 extern int line_num;
 extern int state;
-extern int savedState;
 extern keys k;
+
 
 int filter(char *filename, int line);
 tlk scan(int index);
+int findmaxLine (char *filename);
+int findmaxChar();
 
 #endif

@@ -1,15 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "driver.h"
-#include "token.h"
 #include "scanner.h"
 #include "testscanner.h"
 
 #define BufferSize 256
 
-/*
-void testScan() {
+
+void testScan(char *filename) {
 
 	int i, j;
 	int maxline;
@@ -17,17 +15,28 @@ void testScan() {
 	tlk token;
 
 	// first find the max line of the file 
-	maxline = findmaxLine("file.txt");
+	maxline = findmaxLine(filename);
+	//printf("maxline is %d\n",maxline);
 
 	for(i=0; i<maxline; i++) {
-		filter("file.txt", i); //filter line i
+		filter(filename, i); //filter line i
+		maxchar = findmaxChar();
+		//printf("maxchar is %d\n",maxchar);
 
-		for (j=0; j<BufferSize; j++) {
+		for (j=0; j<maxchar; j++) {
 			token = scan(j);
+
 			
 			if (token.wait != 1 && token.error != 1) {
-				printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
-				j--;
+				printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+				
+				if (token.tk_Id == 0) {
+					printf("EOF reached\n");
+					break;
+				}
+				
+				else
+					j--;	//back tracing
 			}
 
 		}
@@ -35,9 +44,9 @@ void testScan() {
 	}
 
 }
-*/
 
-void testScan() {
+/*
+void testScan(char *filename) {
 
 	tlk token;
 	int i;
@@ -45,7 +54,7 @@ void testScan() {
 	int maxline;
 
 	//put line loop here
-	filter("example.txt", 0);
+	filter(filename, 0);
 	maxchar = findmaxChar();
 	//printf("max char is %d\n",maxchar);
 	//printf("%s\n",line_str);
@@ -53,14 +62,14 @@ void testScan() {
 	for(i=0; i<maxchar; i++) {
 		token = scan(i);
 		if (token.wait != 1 && token.error != 1) {
-			printf("tokenID:%d \n tokenInst:%s \n line:%d\n",token.tk_Id,token.tk_inst,token.line);
+			printf("tokenID:%d \n tokenInst:%s \n line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
 			i--;
 		}
 	}
 }
+*/
 
-
-/* function to find the max line of the file */
+/* function to find the max line of the file being read *//*
 int findmaxLine (char *filename) {
 
 	FILE *fp;
@@ -81,9 +90,9 @@ int findmaxLine (char *filename) {
   fclose(fp);
   
   return lines;
-}
+}*/
 
-/* function to find the max character in line_str buffer */
+/* function to find the max character in line_str buffer *//*
 int findmaxChar () {
 
 	int i;
@@ -101,4 +110,4 @@ int findmaxChar () {
 	}
 	return counter;
 }
-
+*/

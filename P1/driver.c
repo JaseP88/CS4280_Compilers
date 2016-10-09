@@ -73,7 +73,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.tk_Id = Eof_Tk;
 				token.tk_inst = tokenString[0];
 				token.line = line_num;
-				state = 0; //reset the state
+				state = 0; //reset the state back to s1 (state 1)
 				token.wait=0;
 				token.error=0;
 				return token;

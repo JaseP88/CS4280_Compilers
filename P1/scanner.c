@@ -8,7 +8,7 @@
 
 #define Buffersize 256	//define the buffersize a line
 
-int line_num = 0;
+int line_num;
 char line_str[Buffersize];
 
 int state = s1; //set state to initial also keep track of currState
@@ -19,6 +19,10 @@ keys k = 0;
 	and filters out specific keys, changing it to WS
 	filter returns 1 if fine -1 if error */
 int filter (char *filename, int line) {
+
+	int maxline = findmaxLine(filename);
+	int maxchar;
+	line_num = line+1;
 
 	int i, cursor;
 	int count = 0;
@@ -40,7 +44,7 @@ int filter (char *filename, int line) {
 			count++;
 	}
 	
-	/* filters out # and newlines and comments*/
+	/* filters out comments that starts with @ */
 	for (i=0; i<sizeof(line_str); i++) {
 		if (line_str[i] == '@') {
 			line_str[i] = ' ';
@@ -52,7 +56,6 @@ int filter (char *filename, int line) {
 				
 				else {
 					line_str[cursor] = ' ';
-					//printf("%s\n", line_str); //testprintf
 					cursor++;
 				}
 			}
@@ -60,13 +63,23 @@ int filter (char *filename, int line) {
 		}
 	
 	}
-	//printf("%s\n", line_str); //testprintf
+
+	/* simulates an EOF at the end of the file */
+	int t;
+	t = maxline - 1;
+	if (line == t) {
+		maxchar = findmaxChar();
+		line_str[maxchar] = -1;
+	}
+
 
 	fclose(file);
 	return 1;
 }
 
 
+/* scan function: scans each the stored characters in line_str buffer and pass
+	the define key and character value to the FSAdriver method */
 tlk scan(int index) {
 	tlk token;
 
@@ -93,7 +106,8 @@ tlk scan(int index) {
 			k = digit;
 			break;
 		
-		case '\0':
+		case -1:
+			//printf("*&**&*&*&*&*&*&**&*&*is nullshit here???\n");
 			k = end;
 			break;
 		case ' ':
@@ -160,11 +174,11 @@ tlk scan(int index) {
 			k = rgtbracket;
 			break;
 		case '\n':
-			line_str[index] = ' ';	//pass WS to Driver method
+			line_str[index] = ' ';	//pass WS to Driver methods if newline is detected
 			k = WS;
 			break;
 		default:
-			fprintf(stderr,"Error key not found\n");
+			fprintf(stderr,"Error key not found. Characters %c not in alphabet\n",line_str[index]);
 	}
 
 	//call driver here
@@ -172,3 +186,44 @@ tlk scan(int index) {
 	return token;
 }
 
+/* function to find the max line of the file being read */
+int findmaxLine (char *filename) {
+
+	FILE *fp;
+	char ch;
+	int lines = 0;
+
+	if ((fp=fopen(filename,"r")) == NULL) {
+		fprintf(stderr,"error opening file %s, check to see if file exists\n",filename);
+		return -1;
+	}
+
+	while (!feof(fp)) {
+    	ch =  fgetc(fp);
+    	if (ch == '\n')
+      		lines++;
+  	}
+
+  fclose(fp);
+  
+  return lines;
+}
+
+/* function to find the max character in line_str buffer */
+int findmaxChar () {
+
+	int i;
+	int counter = 0;
+
+	for (i=0; i<Buffersize; i++) {
+		
+		if (line_str[i] != '\0') {
+			counter++;
+		}	
+		
+		else {
+			break;
+		}
+	}
+	return counter;
+}

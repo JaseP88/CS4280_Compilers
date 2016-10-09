@@ -6,8 +6,9 @@
 #include "scanner.h"
 
 
-void testScan();
+void testScan(char *filename);
+/*
 int findmaxLine (char *filename);
 int findmaxChar();
-
+*/
 #endif
