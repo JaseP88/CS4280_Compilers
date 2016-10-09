@@ -8,7 +8,7 @@
 
 #define Error -1
 #define Final 1000
-#define StringSize 8
+#define StringSize 9	//added +1 for \0 char
 #define BiggerSize 32
 
 /* FSA table */
@@ -46,9 +46,9 @@ static int table[state_][keys_] = {
 /*s30*/	{-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1, 	-1	}	
 };
 
-static char strng[StringSize];	//build string to match keyword
+char strng[StringSize];	//string buffer to match KW
+static char idString[BiggerSize];	//identifier string
 static int indx = 0;
-static char identName[BiggerSize];
 
 /* Driver function for FSA table */
 tlk FADriver(int currState, int keyPassed, char c) {
@@ -65,8 +65,8 @@ tlk FADriver(int currState, int keyPassed, char c) {
 		return token;
 	}
 
-	else if (nextState >= Final) 
-		
+	else if (nextState >= Final) {
+	
 		switch(nextState) {	
 			/* all the final cases */
 			case 1000:
@@ -77,7 +77,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			/* speacial case 1001, check if identifier string is keyword */
 			case 1001:
@@ -85,194 +84,205 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					token.tk_Id = Bgn_Tk;
 					token.tk_inst = tokenString[3];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);	//reset string buffer
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[4],3) == 0) {	//End KW
 					token.tk_Id = End_Tk;
 					token.tk_inst = tokenString[4];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[5],5) == 0) {	//Start KW
 					token.tk_Id = Strt_Tk;
 					token.tk_inst = tokenString[5];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[6],4) == 0) {	//Stop KW
 					token.tk_Id = Stp_Tk;
 					token.tk_inst = tokenString[6];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[7],3) == 0) {	//Iff KW
 					token.tk_Id = Iff_Tk;
 					token.tk_inst = tokenString[7];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[8],4) == 0) {	//Loop KW
 					token.tk_Id = Loop_Tk;
 					token.tk_inst = tokenString[8];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[9],4) == 0) {	//Void KW
 					token.tk_Id = Void_Tk;
 					token.tk_inst = tokenString[9];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[10],3) == 0) {	//Var KW
 					token.tk_Id = Var_Tk;
 					token.tk_inst = tokenString[10];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[11],3) == 0) {	//Int KW
 					token.tk_Id = Int_Tk;
 					token.tk_inst = tokenString[11];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[12],4) == 0) {	//Call KW
 					token.tk_Id = Call_Tk;
 					token.tk_inst = tokenString[12];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[13],6) == 0) {	//Return KW
 					token.tk_Id = Return_Tk;
 					token.tk_inst = tokenString[13];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[14],4) == 0) {	//Scan KW
 					token.tk_Id = Scan_Tk;
 					token.tk_inst = tokenString[14];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[15],5) == 0) {	//Print KW
 					token.tk_Id = Prnt_Tk;
 					token.tk_inst = tokenString[15];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else if (strncmp(strng, tokenString[16],7) == 0) {	//Program KW
 					token.tk_Id = Prg_Tk;
 					token.tk_inst = tokenString[16];
 					token.line = line_num;
+					memset(strng, ' ',StringSize);
 					indx = 0; //reset string index
 					state = 0; //reset the state
 					token.wait=0;
 					token.error=0;
 					return token;
-					break;
 				}
 
 				else {	//Just an Identifier
-					strcpy(identName,tokenString[1]);
-					strcat(identName,strng);
-
+					
+					strcpy(idString,tokenString[1]);
+					strcat(idString,strng);
+					
 					token.tk_Id = Identifier_Tk;
-					token.tk_inst = identName;
+					token.tk_inst = idString;	//identifier String
 					token.line = line_num;
-					indx = 0; //reset string index
-					state = 0; //reset the state
+	
+					/* resets */
+					indx = 0; 
+					state = 0; 
 					token.wait=0;
 					token.error=0;
+					memset(strng,' ',StringSize);
 					return token;
-					break;
 				}
 
+			/* Number Literals */
 			case 1002:
+				strcpy(idString,tokenString[2]);
+				strcat(idString,strng);
+
 				token.tk_Id = IntLiteral_Tk;
-				token.tk_inst = tokenString[2];
+				token.tk_inst = idString;
 				token.line = line_num;
-				state = 0; //reset the state
+
+				/* resets */
+				indx = 0;
+				state = 0; 
 				token.wait=0;
 				token.error=0;
+				memset(strng,' ',StringSize);
+
 				return token;
-				break;
 
 			case 1003:
 				token.tk_Id = Eq_Tk;
@@ -282,7 +292,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1004:
 				token.tk_Id = DblEq_Tk;
@@ -292,7 +301,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1005:
 				token.tk_Id = DnEq_Tk;
@@ -302,7 +310,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 				
 			case 1006:
 				token.tk_Id = Lt_Tk;
@@ -312,7 +319,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1007:
 				token.tk_Id = Lt_Eq_Tk;
@@ -322,7 +328,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1008:
 				token.tk_Id = Gt_Tk;
@@ -332,7 +337,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1009:
 				token.tk_Id = Gt_Eq_Tk;
@@ -342,7 +346,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1010:
 				token.tk_Id = Cln_Tk;
@@ -352,7 +355,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1011:
 				token.tk_Id = Minus_Tk;
@@ -362,7 +364,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1012:
 				token.tk_Id = Ast_Tk;
@@ -372,7 +373,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1013:
 				token.tk_Id = BkSlash_Tk;
@@ -382,7 +382,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1014:
 				token.tk_Id = Amper_Tk;
@@ -392,7 +391,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1015:
 				token.tk_Id = Prcnt_Tk;
@@ -402,7 +400,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1016:
 				token.tk_Id = Period_Tk;
@@ -412,7 +409,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1017:
 				token.tk_Id = LftParen_Tk;
@@ -422,7 +418,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1018:
 				token.tk_Id = RgtParen_Tk;
@@ -432,7 +427,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1019:
 				token.tk_Id = Comma_Tk;
@@ -442,7 +436,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1020:
 				token.tk_Id = LftBrace_Tk;
@@ -452,7 +445,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1021:
 				token.tk_Id = RgtBrace_Tk;
@@ -462,7 +454,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1022:
 				token.tk_Id = SemiColon_Tk;
@@ -472,7 +463,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1023:
 				token.tk_Id = LftBracket_Tk;
@@ -482,7 +472,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1024:
 				token.tk_Id = RgtBracket_Tk;
@@ -492,7 +481,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			case 1025:
 				token.tk_Id = Plus_Tk;
@@ -502,13 +490,13 @@ tlk FADriver(int currState, int keyPassed, char c) {
 				token.wait=0;
 				token.error=0;
 				return token;
-				break;
 
 			default:
 				fprintf(stderr,"No Final Code Found\n");
 				state = 0; //reset the state
 				break;
 		}
+	}
 
 	else {
 
@@ -527,3 +515,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 
 	return token;
 }
+
+
+
+

@@ -46,13 +46,15 @@ int filter (char *filename, int line) {
 			line_str[i] = ' ';
 			cursor = i+1;
 			while (1) {
-				if (line_str[cursor] != ' ') {
+				
+				if (line_str[cursor] == ' ' || line_str[cursor] == '\n' || line_str[cursor] == '\0') 
+					break;
+				
+				else {
 					line_str[cursor] = ' ';
 					//printf("%s\n", line_str); //testprintf
 					cursor++;
 				}
-				else
-					break;
 			}
 			
 		}

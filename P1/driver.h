@@ -17,9 +17,7 @@ s21, s22, s23, s24, s25, s26, s27, s28, s29, s30
 
 //add error codes here
 
-// FSA Table
-//extern int table[state_][keys_];
-
+extern char strng[9];
 
 tlk FADriver(int st, int key, char c); //driver prototype
 
