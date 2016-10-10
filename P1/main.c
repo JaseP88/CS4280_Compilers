@@ -21,8 +21,8 @@ int main (int argc, char *argv[]) {
 
 		char file[filenameSize];
 		char *filename = argv[1];
-		char *extension = ".txt";
-
+		char *extension = ".txt";	//change to fsf
+		char *extension2 = ".fs16";
 		strcpy(file, filename);
 		strcat(file,extension);
 
@@ -30,11 +30,9 @@ int main (int argc, char *argv[]) {
 	}	
 
 	/* read from keyboard */
-	else {
-
+	else 
 		testScan2();
-
-	}
+	
 
 	return 0;
 }

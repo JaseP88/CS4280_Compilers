@@ -4,7 +4,7 @@
 #include "token.h"
 #include "scanner.h"
 
-#define state_	30
+#define state_ 30
 #define keys_ 24
 
 

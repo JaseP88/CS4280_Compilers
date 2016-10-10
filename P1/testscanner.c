@@ -73,5 +73,11 @@ void testScan2() {
 			}
 
 		}
+
 	}
+
+	maxchar = findmaxChar();	//finds max char of last line
+	line_str[maxchar] = -1;		//add the EOF signal to end the stream
+	token = scan(maxchar);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id, token.tk_inst,token.line);
 }

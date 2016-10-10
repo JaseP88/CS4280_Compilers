@@ -1,23 +1,23 @@
 #include "token.h"
 
-char *tokenString[] = {"End of File", "Idtk:", 
+char *tokenString[] = {"Eoftk", "Idtk:", 
 	"#Tk:", 
 
 	"Begin", "End", "Start",
 	"Stop", "Iff", "Loop", 
 	"Void", "Var", "Int", 
 	"Call", "Return", "Scan",
-	"Print", "Program", 
+	"Print", "Program", 	//16
 
-	"Colon Operator", "Double Equal Operator", "Plus Operator",
-	"Minus Operator", "Asterisk Operator", "Backslash Operator",
-	"Ampersand Operator", "Percent Operator", 
+	":tk", "==tk", "+tk",
+	"-tk", "*tk", "/tk",
+	"&tk", "%tk", 	//24
 
-	"Equal", "Less Than", "Greater Than", "Does Not Equal",
-	"Less Than Or Equal", "Greater Than Or Equal", 
+	"=tk", "<tk", ">tk", "=!=tk",
+	"<=<tk", ">=>tk", 
 
-	"Period", "Left Parentheses", "Right Parentheses", 
-	"Comma", "Left Brace", "Right Brace", "Semicolon",
-	"Left Bracket", "Right Bracket" 
+	".tk", "(tk", ")tk", 
+	",tk", "{tk", "}tk", ";tk",
+	"[tk", "]tk" 
 
 };

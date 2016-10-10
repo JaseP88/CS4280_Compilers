@@ -20,13 +20,14 @@ keys k = 0;
 	filter returns 1 if fine -1 if error */
 int filter (char *filename, int line) {
 
-	int maxline = findmaxLine(filename);
-	int maxchar;
-	line_num = line+1;
-
-	int i, cursor;
-	int count = 0;
+	int maxline, maxchar;
+	int i, cursor, count;
 	FILE *file;
+
+	maxline = findmaxLine(filename);
+	line_num = line+1;
+	count = 0;
+	
 
 	/* open the file */
 	if ((file=fopen(filename,"r")) == NULL) {
@@ -38,7 +39,7 @@ int filter (char *filename, int line) {
 		fgets adds /0 at the end, reads at least size-1 */
 	while (fgets(line_str, sizeof(line_str), file) != NULL) {
 
-		if (count == line)
+		if (count == line)	//line_str stores the specific line
 			break;
 		else
 			count++;
@@ -65,7 +66,6 @@ int filter (char *filename, int line) {
 	}
 
 	/* simulates an EOF at the end of the file */
-	
 	if (line == maxline-1) {
 		maxchar = findmaxChar();
 		line_str[maxchar] = -1;
@@ -128,8 +128,7 @@ tlk scan(int index) {
 			k = digit;
 			break;
 		
-		case -1:
-			//printf("*&**&*&*&*&*&*&**&*&*is nullshit here???\n");
+		case -1:	//eof value
 			k = end;
 			break;
 		case ' ':

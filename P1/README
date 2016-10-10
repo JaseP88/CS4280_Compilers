@@ -1,0 +1,4 @@
+My Scanner project P1 is using the FSA table and driver method.
+
+The table and the driver method is implemented in driver.c and its
+information is included in driver.h
