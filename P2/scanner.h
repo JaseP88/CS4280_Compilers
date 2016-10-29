@@ -17,11 +17,13 @@ extern char line_str[];	//string buffer that holds all the text in a line. Size 
 extern int line_num;
 extern int state;
 extern keys k;
-
+extern int line_position;
+extern int index_position;
 
 int filter(char *filename, int line);
 void filter2();
 tlk scan(int index);
+tlk Scanner(char *filename);
 int findmaxLine (char *filename);
 int findmaxChar();
 

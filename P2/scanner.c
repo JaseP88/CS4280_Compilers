@@ -14,6 +14,10 @@ char line_str[Buffersize];
 int state = s1; //set state to initial also keep track of currState
 keys k = 0;
 
+/* these 2 variables keep track of current line and current index 
+	for Scanner() */
+int line_position = 0;
+int index_position = 0;
 
 /* this method stores the read line into an array buffer line_str
 	and filters out specific keys, changing it to WS
@@ -71,7 +75,6 @@ int filter (char *filename, int line) {
 		line_str[maxchar] = -1;
 	}
 
-
 	fclose(file);
 	return 1;
 }
@@ -99,6 +102,40 @@ void filter2() {
 	}
 
 }
+
+/* Scanner function return 1 complete token at a time */
+tlk Scanner (char *filename) {
+	int maxchar;
+	tlk token;
+
+	/* filters the line in file and remove comments and get max char in that line */
+	filter (filename, line_position);
+	maxchar = findmaxChar();
+	
+	while (index_position < maxchar) {
+
+		if (index_position == maxchar-1) {
+			token = scan(index_position);
+			index_position = 0;	//reset here
+			line_position++;	//set a new line position
+			if (token.wait != 1 && token.error != 1) {
+				return token;
+			}
+			else
+				break;
+		}
+
+		else {
+			token=scan(index_position);
+			index_position++;
+			if (token.wait != 1 && token.error != 1) {
+				index_position--;
+				return token;
+			}
+		}
+	}
+}
+
 
 /* scan function: scans each the stored characters in line_str buffer and pass
 	the define key and character value to the FSAdriver method */
@@ -196,6 +233,10 @@ tlk scan(int index) {
 			break;
 		case '\n':
 			line_str[index] = ' ';	//pass WS to Driver methods if newline is detected
+			k = WS;
+			break;
+		case '\0':
+			line_str[index] = ' ';
 			k = WS;
 			break;
 		default:

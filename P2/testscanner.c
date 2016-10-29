@@ -7,6 +7,49 @@
 
 #define BufferSize 256
 
+void testScanner (char *filename) {
+    tlk token;
+
+    token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+	token = Scanner(filename);
+    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+}
 
 void testScan(char *filename) {
 

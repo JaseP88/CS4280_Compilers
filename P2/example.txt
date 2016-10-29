@@ -1,5 +1,12 @@
-Begin youmou
-End What DAHELL
-@comment
-yup
-trollolol
+Begin
+@thisisacomment cat
+dog 12345
+cheese= 907
+IFF <=< iff
+Loop Iff Var Void char = > < =!= +
+-
+= < > =!= >=> <=<
+== : + - * / & %
+. {} () , [];
+@commentthisoutpleaseEndStart End Start
+Stop Int Call Return Scan print Print program Program
