@@ -59,11 +59,11 @@ tlk FADriver(int currState, int keyPassed, char c) {
 	nextState = table[currState][keyPassed];
 
 	if (nextState <= Error) {
-		fprintf(stderr,"error in nextState: line %d\n", line_num);
+		fprintf(stderr,"Error in nextState:\n");
 		switch(nextState) {
 
 			case -1:
-				fprintf(stderr,"%s token not in language\n", strng);
+				fprintf(stderr,"Token:\t%s not in language: line #%d\n", strng,line_num);
 				exit(1);
 
 			/* other error cases here */	

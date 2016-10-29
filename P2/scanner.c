@@ -114,19 +114,13 @@ tlk Scanner (char *filename) {
 	
 	while (index_position < maxchar) {
 
-		if (index_position == maxchar-1) {
-			token = scan(index_position);
-			index_position = 0;	//reset here
-			line_position++;	//set a new line position
-			if (token.wait != 1 && token.error != 1) {
-				return token;
-			}
-			else
-				break;
+		if (index_position == maxchar-1) {	//if the index position is near the end of string buffer
+			token = scan(index_position);	
+			break;		
 		}
 
 		else {
-			token=scan(index_position);
+			token = scan(index_position);
 			index_position++;
 			if (token.wait != 1 && token.error != 1) {
 				index_position--;
@@ -134,6 +128,14 @@ tlk Scanner (char *filename) {
 			}
 		}
 	}
+	index_position = 0;	//reset the index to the string buffer here
+	line_position++;	//set a new line position
+	if (token.wait == 1 || token.error == 1) {
+		printf("Error: Extra WS detected at End Of the Line: line #%d \n",line_position);
+		exit(1);
+	}
+	
+	return token;
 }
 
 
@@ -240,7 +242,7 @@ tlk scan(int index) {
 			k = WS;
 			break;
 		default:
-			fprintf(stderr,"Error key not found. Characters %c not in alphabet: line %d\n",line_str[index], line_num);
+			fprintf(stderr,"Error key not found. Characters %c not in alphabet: line #%d\n",line_str[index], line_num);
 			exit(1);
 	}
 
