@@ -240,7 +240,7 @@ tlk scan(int index) {
 			k = WS;
 			break;
 		default:
-			fprintf(stderr,"Error key not found. Characters %c not in alphabet\n",line_str[index]);
+			fprintf(stderr,"Error key not found. Characters %c not in alphabet: line %d\n",line_str[index], line_num);
 			exit(1);
 	}
 

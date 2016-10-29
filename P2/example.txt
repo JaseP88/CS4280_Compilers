@@ -1,5 +1,5 @@
 Begin
-@thisisacomment cat
+@thisisacomment cat =!k
 dog 12345
 cheese= 907
 IFF <=< iff

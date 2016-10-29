@@ -59,7 +59,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 	nextState = table[currState][keyPassed];
 
 	if (nextState <= Error) {
-		fprintf(stderr,"error in nextState\n");
+		fprintf(stderr,"error in nextState: line %d\n", line_num);
 		switch(nextState) {
 
 			case -1:
