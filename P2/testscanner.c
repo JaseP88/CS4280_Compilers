@@ -12,9 +12,8 @@ void testScanner (char *filename) {
 	int i;
 
 	for (i=0; i <20; i++) {
-		if ((tokenz = Scanner(filename)) == -1) {
 		Scanner(filename);
-		}
+	
 	
 	/* TOKEN is global variable used internally with the Scanner and Parser */
 	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);

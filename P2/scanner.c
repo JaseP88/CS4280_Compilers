@@ -105,11 +105,19 @@ void filter2() {
 
 }
 
-/* Scanner function return 1 complete token at a time
+/* Scanner function */
+void Scanner(char *filename) {
+	int tokenz;
+	if ((tokenz = getToken(filename)) == -1) {
+		getToken(filename);
+	}
+}
+
+/* Gettoken function return 1 complete token at a time
 	return 1 if token is complete
 	return -1 if token not complete
  */
-int Scanner (char *filename) {
+int getToken (char *filename) {
 	int maxchar;
 	tlk token;
 	int i;
@@ -131,17 +139,15 @@ int Scanner (char *filename) {
 
 		token = scan(i);
 			
-			if (token.wait == 0) {
-				TOKEN.tk_Id = token.tk_Id;
-				TOKEN.tk_inst = token.tk_inst;
-				TOKEN.line = token.line;
-				index_position = i;
-				return 1;
-			}
-			else
-				continue;	//to piece the token together
-
-		
+		if (token.wait == 0) {
+			TOKEN.tk_Id = token.tk_Id;
+			TOKEN.tk_inst = token.tk_inst;
+			TOKEN.line = token.line;
+			index_position = i;
+			return 1;
+		}
+		else
+			continue;	//to piece the token together
 	}
 
 	if (token.wait == 0) {
@@ -152,12 +158,10 @@ int Scanner (char *filename) {
 		line_position+=1;
 		return 1;
 	}
-	else {
+	
 	index_position = 0;
 	line_position+=1;
 	return -1;
-	}
-	return 1;
 }
 
 

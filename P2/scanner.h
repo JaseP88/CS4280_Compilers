@@ -24,7 +24,8 @@ extern tlk TOKEN;
 int filter(char *filename, int line);
 void filter2();
 tlk scan(int index);
-int Scanner(char *filename);
+int getToken(char *filename);
+void Scanner(char *filename);
 int findmaxLine (char *filename);
 int findmaxChar();
 
