@@ -38,7 +38,7 @@ int filter (char *filename, int line) {
 	/* open the file */
 	if ((file=fopen(filename,"r")) == NULL) {
 		fprintf(stderr,"error opening file %s, check to see if file exists\n",filename);
-		return -1;
+		exit(1);
 	}
 
 	/* reads specific line of a file and store in string buffer 
@@ -113,19 +113,24 @@ int Scanner (char *filename) {
 	int maxchar;
 	tlk token;
 	int i;
-
+	
 	/* filters the line in file and remove comments and get max char in that line */
 	filter (filename, line_position);
 	maxchar = findmaxChar();
-
+	//printf("********%d\n",maxchar);
 	for (i=index_position; i<maxchar; i++) {
-	
+		if (line_str[maxchar-2] == ' ') {
+			printf("Error: Delete WS at the end: line%d\n",line_position+1);
+			exit(1);
+		}
+
 		if (i == maxchar-1) {
 			token = scan(i);
 			break;
 		}
-		else {
-			token = scan(i);
+
+		token = scan(i);
+			
 			if (token.wait == 0) {
 				TOKEN.tk_Id = token.tk_Id;
 				TOKEN.tk_inst = token.tk_inst;
@@ -134,10 +139,11 @@ int Scanner (char *filename) {
 				return 1;
 			}
 			else
-				continue;
+				continue;	//to piece the token together
 
-		}
+		
 	}
+
 	if (token.wait == 0) {
 		TOKEN.tk_Id = token.tk_Id;
 		TOKEN.tk_inst = token.tk_inst;
@@ -147,10 +153,11 @@ int Scanner (char *filename) {
 		return 1;
 	}
 	else {
-		index_position = 0;
-		line_position+=1;
-		return -1;
+	index_position = 0;
+	line_position+=1;
+	return -1;
 	}
+	return 1;
 }
 
 
