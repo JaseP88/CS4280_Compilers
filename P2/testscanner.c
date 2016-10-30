@@ -11,20 +11,15 @@ void testScanner (char *filename) {
     int tokenz;
 	int i;
 
-	
+	tlk *currentToken = (tlk *)malloc(sizeof(tlk));
 
 	for (i=0; i <20; i++) {
-		Scanner(filename);
+		Scanner(filename,currentToken);
 	
 	
 	/* TOKEN is global variable used internally with the Scanner and Parser */
-	printf("tokenID:%d\t--line:%d\t wait:%d error:%d\t--tokenInst:%s\n\n",TOKEN.tk_Id,TOKEN.line,TOKEN.wait,TOKEN.error,TOKEN.tk_inst);
+	printf("tokenID:%d\t--line:%d\t--tokenInst:%s\n\n",currentToken->tk_Id,currentToken->line,currentToken->tk_inst);
 	}
-	
-	
-
-
-
 }
 
 void testScan(char *filename) {

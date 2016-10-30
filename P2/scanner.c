@@ -8,8 +8,6 @@
 
 #define Buffersize 256	//define the buffersize a line
 
-tlk TOKEN;
-
 int line_num;
 char line_str[Buffersize];
 
@@ -106,10 +104,10 @@ void filter2() {
 }
 
 /* Scanner function  */
-void Scanner(char *filename) {
+void Scanner(char *filename, tlk *TOKEN) {
 	int tokenz;
-	if((tokenz = getToken(filename)) != 1) {
-		getToken(filename);
+	if((tokenz = getToken(filename, TOKEN)) != 1) {
+		getToken(filename, TOKEN);
 	}
 }
 
@@ -117,7 +115,7 @@ void Scanner(char *filename) {
 	return 1 if token is complete
 	return -1 if token not complete
  */
-int getToken (char *filename) {
+int getToken (char *filename, tlk *TOKEN) {
 	int maxchar;
 	tlk token;
 	int i;
@@ -145,9 +143,9 @@ int getToken (char *filename) {
 		token = scan(i);
 			
 		if (token.wait == 0) {
-			TOKEN.tk_Id = token.tk_Id;
-			TOKEN.tk_inst = token.tk_inst;
-			TOKEN.line = token.line;
+			TOKEN->tk_Id = token.tk_Id;
+			TOKEN->tk_inst = token.tk_inst;
+			TOKEN->line = token.line;
 			index_position = i;
 			return 1;
 		}
