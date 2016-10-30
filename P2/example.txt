@@ -1,17 +1,16 @@
-Begin   todo
-@thisisacomment cat =!=
-@hey                     {
-End
-2     k  l
+Hello           
+              
+            
+               
+Begin     
 
-dog 12345 @mu must:w
+Today
+@this is a comment cat
+@anotherone               
+Iff @yoyo      qp  
+Var yep
 
-cheese= 907
-IFF <=< iff
-Loop Iff Var Void char = > < =!= +
--
-= < > =!= >=> <=<
-== : + - * / & %
-. {} () , [];
-@commentthisoutpleaseEndStart End Start
-Stop Int Call Return Scan print Print program Program
+
+
+maybe                      @comment
+@comment                  

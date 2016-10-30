@@ -25,6 +25,7 @@ int filter(char *filename, int line);
 void filter2();
 tlk scan(int index);
 int getToken(char *filename);
+int isEmptyLine(char *theStringBuffer);
 void Scanner(char *filename);
 int findmaxLine (char *filename);
 int findmaxChar();

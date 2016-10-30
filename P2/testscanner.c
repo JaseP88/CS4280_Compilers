@@ -11,12 +11,14 @@ void testScanner (char *filename) {
     int tokenz;
 	int i;
 
+	
+
 	for (i=0; i <20; i++) {
 		Scanner(filename);
 	
 	
 	/* TOKEN is global variable used internally with the Scanner and Parser */
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);
+	printf("tokenID:%d\t--line:%d\t wait:%d error:%d\t--tokenInst:%s\n\n",TOKEN.tk_Id,TOKEN.line,TOKEN.wait,TOKEN.error,TOKEN.tk_inst);
 	}
 	
 	

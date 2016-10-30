@@ -105,10 +105,10 @@ void filter2() {
 
 }
 
-/* Scanner function */
+/* Scanner function  */
 void Scanner(char *filename) {
 	int tokenz;
-	if ((tokenz = getToken(filename)) == -1) {
+	if((tokenz = getToken(filename)) != 1) {
 		getToken(filename);
 	}
 }
@@ -125,17 +125,22 @@ int getToken (char *filename) {
 	/* filters the line in file and remove comments and get max char in that line */
 	filter (filename, line_position);
 	maxchar = findmaxChar();
-	//printf("********%d\n",maxchar);
-	for (i=index_position; i<maxchar; i++) {
-		if (line_str[maxchar-2] == ' ') {
-			printf("Error: Delete WS at the end: line%d\n",line_position+1);
-			exit(1);
-		}
+	
+	while (maxchar == 1 && line_str[maxchar-1] == 10) {	//if line is carriage return move to next line
+		line_position++;
+		index_position=0;
+		filter (filename, line_position);
+		maxchar = findmaxChar();
+	}
 
-		if (i == maxchar-1) {
-			token = scan(i);
-			break;
-		}
+	while (isEmptyLine(line_str) == 0) {	//if line is a comment or just WS
+		line_position++;
+		index_position=0;
+		filter (filename, line_position);
+		maxchar = findmaxChar();
+	}
+	
+	for (i=index_position; i<maxchar; i++) {
 
 		token = scan(i);
 			
@@ -149,21 +154,26 @@ int getToken (char *filename) {
 		else
 			continue;	//to piece the token together
 	}
-
-	if (token.wait == 0) {
-		TOKEN.tk_Id = token.tk_Id;
-		TOKEN.tk_inst = token.tk_inst;
-		TOKEN.line = token.line;
-		index_position = 0;
-		line_position+=1;
-		return 1;
-	}
 	
 	index_position = 0;
 	line_position+=1;
-	return -1;
+	return -1;	
 }
 
+int isEmptyLine(char *theStringBuffer) {
+	int maxchar = findmaxChar();
+	int i;
+	int ws_counter = 0;
+	for (i=0; i<maxchar; i++) {
+		if (theStringBuffer[i] ==  ' ')
+			ws_counter++;
+	}
+	//printf("maxchar is %d ws coutner is %d\n",maxchar, ws_counter);
+	if (ws_counter == maxchar-1)
+		return 0;
+	else 
+		return 1;
+}
 
 /* scan function: scans each the stored characters in line_str buffer and pass
 	the define key and character value to the FSAdriver method */
@@ -259,11 +269,11 @@ tlk scan(int index) {
 		case ']':
 			k = rgtbracket;
 			break;
-		case '\n':
+		case 10:	
 			line_str[index] = ' ';	//pass WS to Driver methods if newline is detected
 			k = WS;
 			break;
-		case '\0':
+		case 0:
 			line_str[index] = ' ';
 			k = WS;
 			break;
