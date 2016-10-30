@@ -9,37 +9,80 @@
 
 void testScanner (char *filename) {
     tlk token;
+	int legit;
 
-    token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+	if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
 
-	token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);
+	if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
 
-	token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
 
-	token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
 
-	token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
+		Scanner(filename);
+
+	//Scanner(filename);
+	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);
+	
 
 
-	token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
 
-	token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
 
-	token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
 
-	token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+    //token = Scanner(filename);
+    //printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
+	
 
-	token = Scanner(filename);
-    printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
 
 	
 }

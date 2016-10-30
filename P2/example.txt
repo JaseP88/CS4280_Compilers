@@ -1,6 +1,7 @@
 Begin   todo
-@thisisacomment cat =!2
-dog 12345
+@thisisacomment cat =!=     
+dog 12345 @mu must:w
+
 cheese= 907
 IFF <=< iff
 Loop Iff Var Void char = > < =!= +

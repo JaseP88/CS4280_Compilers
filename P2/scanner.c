@@ -8,6 +8,8 @@
 
 #define Buffersize 256	//define the buffersize a line
 
+tlk TOKEN;
+
 int line_num;
 char line_str[Buffersize];
 
@@ -103,39 +105,52 @@ void filter2() {
 
 }
 
-/* Scanner function return 1 complete token at a time */
-tlk Scanner (char *filename) {
+/* Scanner function return 1 complete token at a time
+	return 1 if token is complete
+	return -1 if token not complete
+ */
+int Scanner (char *filename) {
 	int maxchar;
 	tlk token;
+	int i;
 
 	/* filters the line in file and remove comments and get max char in that line */
 	filter (filename, line_position);
 	maxchar = findmaxChar();
+
+	for (i=index_position; i<maxchar; i++) {
 	
-	while (index_position < maxchar) {
-
-		if (index_position == maxchar-1) {	//if the index position is near the end of string buffer
-			token = scan(index_position);	
-			break;		
+		if (i == maxchar-1) {
+			token = scan(i);
+			break;
 		}
-
 		else {
-			token = scan(index_position);
-			index_position++;
-			if (token.wait != 1 && token.error != 1) {
-				index_position--;
-				return token;
+			token = scan(i);
+			if (token.wait == 0) {
+				TOKEN.tk_Id = token.tk_Id;
+				TOKEN.tk_inst = token.tk_inst;
+				TOKEN.line = token.line;
+				index_position = i;
+				return 1;
 			}
+			else
+				continue;
+
 		}
 	}
-	index_position = 0;	//reset the index to the string buffer here
-	line_position++;	//set a new line position
-	if (token.wait == 1 || token.error == 1) {
-		printf("Error: Extra WS detected at End Of the Line: line #%d \n",line_position);
-		exit(1);
+	if (token.wait == 0) {
+		TOKEN.tk_Id = token.tk_Id;
+		TOKEN.tk_inst = token.tk_inst;
+		TOKEN.line = token.line;
+		index_position = 0;
+		line_position+=1;
+		return 1;
 	}
-	
-	return token;
+	else {
+		index_position = 0;
+		line_position+=1;
+		return -1;
+	}
 }
 
 
