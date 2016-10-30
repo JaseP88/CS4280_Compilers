@@ -8,83 +8,16 @@
 #define BufferSize 256
 
 void testScanner (char *filename) {
-    tlk token;
-	int legit;
-
-	if ( (legit = Scanner(filename)) == -1) 
+    int tokenz;
+	
+	/* if the token retrieve is not complete call scanner() again */
+	if ( (tokenz = Scanner(filename)) == -1) 
 		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);
-	if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
-	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);if ( (legit = Scanner(filename)) == -1) 
-		Scanner(filename);
-
-	//Scanner(filename);
+	/* TOKEN is global variable used internally with the Scanner and Parser */
 	printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",TOKEN.tk_Id,TOKEN.tk_inst,TOKEN.line);
 	
 
 
-
-
-
-    //token = Scanner(filename);
-    //printf("tokenID:%d\n--tokenInst:%s\n--line:%d\n\n",token.tk_Id,token.tk_inst,token.line);
-	
-
-
-	
 }
 
 void testScan(char *filename) {
