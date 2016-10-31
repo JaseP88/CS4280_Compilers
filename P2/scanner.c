@@ -32,7 +32,6 @@ int filter (char *filename, int line) {
 	line_num = line+1;
 	count = 0;
 	
-
 	/* open the file */
 	if ((file=fopen(filename,"r")) == NULL) {
 		fprintf(stderr,"error opening file %s, check to see if file exists\n",filename);
@@ -63,10 +62,8 @@ int filter (char *filename, int line) {
 					line_str[cursor] = ' ';
 					cursor++;
 				}
-			}
-			
+			}	
 		}
-	
 	}
 
 	/* simulates an EOF at the end of the file */
@@ -79,32 +76,9 @@ int filter (char *filename, int line) {
 	return 1;
 }
 
-void filter2() {
-	int cursor, i;
-
-	for (i=0; i<sizeof(line_str); i++) {
-		if (line_str[i] == '@') {
-			line_str[i] = ' ';
-			cursor = i+1;
-			while (1) {
-				
-				if (line_str[cursor] == ' ' || line_str[cursor] == '\n' || line_str[cursor] == '\0') 
-					break;
-				
-				else {
-					line_str[cursor] = ' ';
-					cursor++;
-				}
-			}
-			
-		}
-	
-	}
-
-}
 
 /* Scanner function  */
-void Scanner(char *filename, tlk *TOKEN) {
+void scanner(char *filename, tlk *TOKEN) {
 	int tokenz;
 	if((tokenz = getToken(filename, TOKEN)) != 1) {
 		getToken(filename, TOKEN);
@@ -127,7 +101,7 @@ int getToken (char *filename, tlk *TOKEN) {
 	while (maxchar == 1 && line_str[maxchar-1] == 10) {	//if line is carriage return move to next line
 		line_position++;
 		index_position=0;
-		filter (filename, line_position);
+		filter (filename, line_position);		//gets the next line into line_str buffer
 		maxchar = findmaxChar();
 	}
 
@@ -139,38 +113,35 @@ int getToken (char *filename, tlk *TOKEN) {
 	}
 	
 	for (i=index_position; i<maxchar; i++) {
-
+		printf("index_position: %d -- i:%d\n",index_position, i);
+		printf("%c\n",line_str[i]);
+		//printf("\n");
 		token = scan(i);
 			
 		if (token.wait == 0) {
 			TOKEN->tk_Id = token.tk_Id;
 			TOKEN->tk_inst = token.tk_inst;
 			TOKEN->line = token.line;
-			index_position = i;
+			index_position = i+1;
 			return 1;
 		}
 		else
 			continue;	//to piece the token together
 	}
-	
-	index_position = 0;
-	line_position+=1;
-	return -1;	
-}
-
-int isEmptyLine(char *theStringBuffer) {
-	int maxchar = findmaxChar();
-	int i;
-	int ws_counter = 0;
-	for (i=0; i<maxchar; i++) {
-		if (theStringBuffer[i] ==  ' ')
-			ws_counter++;
-	}
-	//printf("maxchar is %d ws coutner is %d\n",maxchar, ws_counter);
-	if (ws_counter == maxchar-1)
-		return 0;
-	else 
+	line_position++;
+	index_position=0;
+	filter(filename, line_position);
+	token = scan(index_position);
+	printf("%d",line_str[maxchar]);
+	if (token.wait == 0) {
+		TOKEN->tk_Id = token.tk_Id;
+		TOKEN->tk_inst = token.tk_inst;
+		TOKEN->line = token.line;
 		return 1;
+	}
+	else {
+		return -1;
+	}	
 }
 
 /* scan function: scans each the stored characters in line_str buffer and pass
@@ -267,12 +238,12 @@ tlk scan(int index) {
 		case ']':
 			k = rgtbracket;
 			break;
-		case 10:	
-			line_str[index] = ' ';	//pass WS to Driver methods if newline is detected
+		case 10:	//changes thew newline to WS
+			//line_str[index] = ' ';	//pass WS to Driver methods if newline is detected
 			k = WS;
 			break;
 		case 0:
-			line_str[index] = ' ';
+			//line_str[index] = ' ';
 			k = WS;
 			break;
 		default:
@@ -283,6 +254,22 @@ tlk scan(int index) {
 	//call driver here
 	token = FADriver(state,k,line_str[index]);
 	return token;
+}
+
+/* determines if the line_str is all WS (from comments or just spaces) */
+int isEmptyLine(char *theStringBuffer) {
+	int maxchar = findmaxChar();
+	int i;
+	int ws_counter = 0;
+	for (i=0; i<maxchar; i++) {
+		if (theStringBuffer[i] ==  ' ')
+			ws_counter++;
+	}
+	//printf("maxchar is %d ws coutner is %d\n",maxchar, ws_counter);
+	if (ws_counter == maxchar-1)
+		return 0;
+	else 
+		return 1;
 }
 
 /* function to find the max line of the file being read */
@@ -325,4 +312,28 @@ int findmaxChar () {
 		}
 	}
 	return counter;
+}
+
+void filter2() {
+	int cursor, i;
+
+	for (i=0; i<sizeof(line_str); i++) {
+		if (line_str[i] == '@') {
+			line_str[i] = ' ';
+			cursor = i+1;
+			while (1) {
+				
+				if (line_str[cursor] == ' ' || line_str[cursor] == '\n' || line_str[cursor] == '\0') 
+					break;
+				
+				else {
+					line_str[cursor] = ' ';
+					cursor++;
+				}
+			}
+			
+		}
+	
+	}
+
 }

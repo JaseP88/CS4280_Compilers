@@ -8,6 +8,21 @@
 #define BufferSize 256
 
 
+void testScanner (char *filename) {
+    int tokenz;
+	int i;
+
+	tlk *currentToken = (tlk *)malloc(sizeof(tlk));
+
+	for (i=0; i <20; i++) {
+		scanner(filename,currentToken);
+	
+	
+	/* TOKEN is global variable used internally with the Scanner and Parser */
+	printf("tokenID:%d\t--line:%d\t--tokenInst:%s\n\n",currentToken->tk_Id,currentToken->line,currentToken->tk_inst);
+	}
+}
+
 void testScan(char *filename) {
 
 	int i, j;

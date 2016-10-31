@@ -25,13 +25,13 @@ int main (int argc, char *argv[]) {
 		char *extension2 = ".fs16";
 		strcpy(file, filename);
 		strcat(file,extension);
-
 		testScanner(file);
+		//parser(file);
 	}	
 
 	/* read from keyboard */
 	else 
-		testScan2();
+		//testScan2();
 	
 
 	return 0;

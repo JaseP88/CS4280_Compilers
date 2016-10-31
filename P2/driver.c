@@ -579,7 +579,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 		
 		/* if character is not WS add into string array buffer to use 
 			as comparison for identifiers and keywords */
-		if (c != ' ') {
+		if (c > 32) {
 			strng[indx] = c;
 			indx++;	
 		}

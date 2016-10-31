@@ -7,6 +7,7 @@
 
 
 void testScan(char *filename);
+void testScanner (char *filename);
 void testScan2();
 
 
