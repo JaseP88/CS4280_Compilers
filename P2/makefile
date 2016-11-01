@@ -9,8 +9,8 @@ all: parser
 testScanner: main.o scanner.o driver.o token.o testscanner.o
 	$(CC) -o $@ $(CFLAGS) main.o scanner.o driver.o token.o testscanner.o	
 
-parser: main.o scanner.o driver.o token.o parser.o
-	$(CC) -o $@ $(CFLAGS) main.o scanner.o driver.o token.o parser.o
+parser: main.o scanner.o driver.o token.o parser.o node.o
+	$(CC) -o $@ $(CFLAGS) main.o scanner.o driver.o token.o parser.o node.o
 
 clean:
 	rm -f parser testScanner

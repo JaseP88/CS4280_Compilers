@@ -7,373 +7,430 @@
 #include "node.h"
 
 /* auxillary function  <*/
-void parser(char *filename) {
+node_t *parser(char *filename) {
     tlk *token = (tlk *)malloc(sizeof(tlk));    //create token in heap memory
+    node_t *root;
 
     scanner(filename,token); //retrieve token
-    program(filename,token); //call program
-    //scanner(filename,token);
+    root = program(filename,token); //call program
 
-    printf("THE TOKEN AFTER ALL THATS DONE IS tokenID:%d--%s--%d\n",token->tk_Id,token->tk_inst,token->line);
-
-    if (token->tk_Id != Eof_Tk) {
-        printf("ERROR: <parser> expected EOF token, EOF token not found\n");
-    }
-    else
+    //printf("THE TOKEN AFTER ALL THATS DONE IS tokenID:%d--%s--%d\n",token->tk_Id,token->tk_inst,token->line);
+    if (token->tk_Id != Eof_Tk) 
+        errCond("parser","EOF",token->line);    //prints error messages and exits
+    
+    else {
         printf("parser complete and is A-OK\n");
+        return root;
+    }
 }
 
 /* <program> */
-void program(char *filename, tlk *tk) {
-   vars(filename,tk);
-   block(filename,tk);
-   return;
+node_t *program(char *filename, tlk *tk) {
+    node_t *node = getNode("program");  //create node for <program> and label it 
+    node->child1 =  vars(filename,tk);
+    node->child2  = block(filename,tk);
+    //node->child3 = NULL;
+    return node;
 }
 
 /* <block> */
-void block(char *filename, tlk *tk) {
-    if (tk->tk_Id == Bgn_Tk) {
-        scanner(filename,tk);
-        vars(filename,tk);
-        stats(filename,tk);
+node_t *block(char *filename, tlk *tk) {
+    node_t *node = getNode("<block>");   //create node for <block> and label it
+
+    if (tk->tk_Id == Bgn_Tk) {  //structural token no need to store
+        scanner(filename,tk);   //consume the token and get new token
+        
+        node->child1 = vars(filename,tk);
+        node->child2 = stats(filename,tk);
+       
         if (tk->tk_Id == End_Tk) {
             scanner(filename,tk);
-            return; //
+            return node; 
         }
         else
-            printf("ERROR: <block> expected End token instead of %s --line:%d\n",tk->tk_inst,tk->line);
+            errCond("block","End",tk->line);
     }
     else
-        printf("ERROR: <block> expected Begin token instead of %s --line:%d\n",tk->tk_inst,tk->line);
+        errCond("block","Begin",tk->line);
+        //printf("ERROR: <block> expected Begin token instead of %s --line:%d\n",tk->tk_inst,tk->line);
 }
 
 /* <vars> */
-void vars(char *filename, tlk *tk) {
+node_t *vars(char *filename, tlk *tk) {
+    node_t *node = getNode("<vars>");
+
     if (tk->tk_Id == Var_Tk) {
         scanner(filename,tk);
-        if (tk->tk_Id == Identifier_Tk) {
+        if (tk->tk_Id == Identifier_Tk) {   //save this semantic token
+            node->token = tk;               //saving.....
             scanner(filename,tk);
-            mvars(filename,tk);
-            return;
+            node->child1 = mvars(filename,tk);
+            return node;
         }
         else
-            printf("ERROR: <vars> expected Id token after Var instead of %s --line:%d\n",tk->tk_inst,tk->line);
+            errCond("vars","ID",tk->line);
     }
     else 
-        return; //empty production
+        return NULL; //empty production
 }
 
 /* <mvars> */
-void mvars(char *filename, tlk *tk) {
+node_t *mvars(char *filename, tlk *tk) {
+    node_t *node = getNode("<mvars>");
+
     if (tk->tk_Id == Cln_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == Cln_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Identifier_Tk) {
+                node->token = tk;
                 scanner(filename,tk);
-                mvars(filename,tk);
-                return;
+                node->child1 = mvars(filename,tk);
+                return node;
             }
             else
-                printf("ERROR: <mvars> expected Id token instead of %s --line:%d\n",tk->tk_inst,tk->line);
+                errCond("mvars","ID",tk->line);
         }
         else
-            printf("ERROR: <mvars> expected second colon( : ) token instead of %s --line:%d\n",tk->tk_inst,tk->line);
+            errCond("mvars",":",tk->line);
     }
     else
-        return; //empty production
+        return NULL; //empty production
 }
 
 /* <expr> */
-void expr(char *filename, tlk *tk) {
-    M(filename,tk);
-    rpxe(filename,tk);
-    return;
+node_t *expr(char *filename, tlk *tk) {
+    node_t *node = getNode("<expr>");
+    node->child1 = M(filename,tk);
+    node->child2 = rpxe(filename,tk);
+    return node;
 }
 
 /* <rpxe> backwards HAH */
-void rpxe(char *filename, tlk *tk) {
+node_t *rpxe(char *filename, tlk *tk) {
+    node_t *node = getNode("<rpxe>");
     if (tk->tk_Id == Plus_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        expr(filename,tk);
-        return;
+        node->child1 = expr(filename,tk);
+        return node;
     }
     else
-        return;
+        return NULL;
 }
 
 /* <M> */
-void M(char *filename, tlk *tk) {
-    T(filename,tk);
-    N(filename,tk);
-    return;
+node_t *M(char *filename, tlk *tk) {
+    node_t *node = getNode("<M>");
+    node->child1 = T(filename,tk);
+    node->child2 = N(filename,tk);
+    return node;
 }
 
 /* <N> */
-void N(char *filename, tlk *tk) {
+node_t *N(char *filename, tlk *tk) {
+    node_t *node = getNode("<N>");
     if (tk->tk_Id == Minus_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        M(filename,tk);
-        return;
+        node->child1 = M(filename,tk);
+        return node;
     }
     else
-        return;
+        return NULL;
 }
 
 /* <T> */
-void T(char *filename, tlk *tk) {
-    F(filename,tk);
-    X(filename,tk);
-    return;
+node_t *T(char *filename, tlk *tk) {
+    node_t *node = getNode("<T>");
+    node->child1 = F(filename,tk);
+    node->child2 = X(filename,tk);
+    return node;
 }
 
 /* <X> */
-void X(char *filename, tlk *tk) {
+node_t *X(char *filename, tlk *tk) {
+    node_t *node = getNode("<X>");
     if (tk->tk_Id == Ast_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        T(filename,tk);
-        return;
+        node->child1 = T(filename,tk);
+        return node;
     }
     else if (tk->tk_Id == BkSlash_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        T(filename,tk);
-        return;
+        node->child1 = T(filename,tk);
+        return node;
     }
     else 
-        return;
+        return NULL;
 }
 
 /* <F> */
-void F(char *filename, tlk *tk) {
+node_t *F(char *filename, tlk *tk) {
+    node_t *node = getNode("<F>");
     if (tk->tk_Id == Minus_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        F(filename,tk);
-        return;
+        node->child1 = F(filename,tk);
+        return node;
     }
     else 
-        R(filename,tk);
-    return;
+        node->child1 = R(filename,tk);
+    return node;
 }
 
 /* <R> */
-void R(char *filename, tlk *tk) {
+node_t *R(char *filename, tlk *tk) {
+    node_t *node = getNode("<R>");
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
-        expr(filename,tk);
+        node->child1 = expr(filename,tk);
         if (tk->tk_Id == RgtBracket_Tk) {
             scanner(filename,tk);
-            return;
+            return node;
         }
         else
-            printf("ERROR: <R> expected Right Bracket Token ( ] ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+            errCond("R","]",tk->line);
     }
     else if (tk->tk_Id == Identifier_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        return;
+        return node;
     }
     else if (tk->tk_Id == IntLiteral_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        return;
+        return node;
     }
     else
-        printf("ERROR: <R> expected ( [ ) OR Id OR # Token instead of %s --line:%d\n",tk->tk_inst,tk->line);
+        errCond("R","[",tk->line);
 }
 
 /* <stats> */
-void stats(char *filename, tlk *tk) {
-    stat(filename,tk);
-    mStat(filename,tk);
-    return;
+node_t *stats(char *filename, tlk *tk) {
+    node_t *node = getNode("<stats>");
+    node->child1 = stat(filename,tk);
+    node->child2 = mStat(filename,tk);
+    return node;
 }
 
 /* <mStats> */
-void mStat(char *filename, tlk *tk) {
+node_t *mStat(char *filename, tlk *tk) {
+    node_t *node = getNode("<mStat>");
     //prediction ??
     if (tk->tk_Id == Scan_Tk || tk->tk_Id == Prnt_Tk || tk->tk_Id == Bgn_Tk || tk->tk_Id == LftBracket_Tk || tk->tk_Id == Loop_Tk || tk->tk_Id == Identifier_Tk) {
         //don't consume the token yet'
-        stat(filename,tk);
-        mStat(filename,tk);
-        return;
+        node->child1 = stat(filename,tk);
+        node->child2 = mStat(filename,tk);
+        return node;
     }
     else
-        return;
+        return NULL;
 }
 
 /* <stat> */
-void stat(char *filename, tlk *tk) {
+node_t *stat(char *filename, tlk *tk) {
+    node_t *node = getNode("<stat>");
     if (tk->tk_Id == Scan_Tk) {
         //dont consume token yet
-        in(filename,tk);
-        return;
+        node->child1 = in(filename,tk);
+        return node;
     }
     else if (tk->tk_Id == Prnt_Tk) {
-        out(filename,tk);
-        return;
+        node->child1 = out(filename,tk);
+        return node;
     }
     else if (tk->tk_Id == Bgn_Tk) {
-        block(filename,tk);
-        return;
+        node->child1 = block(filename,tk);
+        return node;
     }
     else if (tk->tk_Id == LftBracket_Tk) {
-        if_(filename,tk);
-        return;
+        node->child1 = if_(filename,tk);
+        return node;
     }
     else if (tk->tk_Id == Loop_Tk) {
-        loop(filename,tk);
-        return;
+        node->child1 = loop(filename,tk);
+        return node;
     }
     else if (tk->tk_Id == Identifier_Tk) {
-        assign(filename,tk);
-        return;
+        node->child1 = assign(filename,tk);
+        return node;
     }
-    else
-        printf("ERROR: <stat> expected tokens: Scan OR ID OR Loop OR Begin OR Print OR ( [ ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+    else {
+        printf("ERROR: <stat> expected tokens: Scan OR ID OR Loop OR Begin OR Print OR ( [ ) line:%d\n",tk->line);
+        exit(1);
+    }
 }
 
 /* <in> */
-void in(char *filename, tlk *tk) {
+node_t *in(char *filename, tlk *tk) {
+    node_t *node = getNode("<in>");
     if (tk->tk_Id == Scan_Tk) {
         scanner(filename,tk);   //finally consume here
         if (tk->tk_Id == Cln_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Identifier_Tk) {
+                node->token = tk;
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
                     scanner(filename,tk);
-                    return;
+                    return node;
                 }
                 else
-                    printf("ERROR: <in> expected token ( . ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+                    errCond("in",".",tk->line);
             }
             else
-                printf("ERROR: <in> expected token ID instead of %s --line:%d\n",tk->tk_inst,tk->line);
+                errCond("<in>","ID",tk->line);
         }
         else
-            printf("ERROR: <in> expected token ( : ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+            errCond("<in>",":",tk->line);
     }
     else
-        printf("ERROR: <in> expected token Scan instead of %s --line:%d\n",tk->tk_inst,tk->line);
+        errCond("<in>","Scan",tk->line);
 }
 
 /* <out> */
-void out(char *filename, tlk *tk) {
+node_t *out(char *filename, tlk *tk) {
+    node_t *node = getNode("<out>");
     if (tk->tk_Id == Prnt_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
-            expr(filename,tk);
+            node->child1 = expr(filename,tk);
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
                     scanner(filename,tk);
-                    return;
+                    return node;
                 }
                 else
-                    printf("ERROR: <out> expected token ( . ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+                    errCond("out",".",tk->line);
             }
             else
-                printf("ERROR: <out> expected token ( ] ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+                errCond("out","]",tk->line);
         }
-        printf("ERROR: <out> expected token ( [ ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+        else
+            errCond("out","[",tk->line);
     }
-    printf("ERROR: <out> expected token Print instead of %s --line:%d\n",tk->tk_inst,tk->line);
+    else
+        errCond("out","Print",tk->line);
 }
 
 /* <if> */
-void if_(char *filename, tlk *tk) {
+node_t *if_(char *filename, tlk *tk) {
+    node_t *node = getNode("<if>");
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
-        expr(filename,tk);
-        RO(filename,tk);
-        expr(filename,tk);
+        node->child1 = expr(filename,tk);
+        node->child2 = RO(filename,tk);
+        node->child3 = expr(filename,tk);
         if (tk->tk_Id == RgtBracket_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Iff_Tk) {
                 scanner(filename,tk);
-                block(filename,tk);
-                return;
+                node->child4 = block(filename,tk);
+                return node;
             }
             else
-                printf("ERROR: <if> expected token Iff instead of %s --line:%d\n",tk->tk_inst,tk->line);
+                errCond("if","Iff",tk->line);
         }
         else
-            printf("ERROR: <if> expected token ( ] ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+            errCond("if","]",tk->line);
     }
     else
-        printf("ERROR: <if> expected token ( [ ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+        errCond("if","[",tk->line);
 }
 
 /* <loop> */
-void loop(char *filename, tlk *tk) {
+node_t *loop(char *filename, tlk *tk) {
+    node_t *node = getNode("<loop>");
     if (tk->tk_Id == Loop_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
-            expr(filename,tk);
-            RO(filename,tk);
-            expr(filename,tk);
+            node->child1 = expr(filename,tk);
+            node->child2 = RO(filename,tk);
+            node->child3 = expr(filename,tk);
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
-                block(filename,tk);
-                return;
+                node->child4 = block(filename,tk);
+                return node;
             }
             else
-                printf("ERROR: <loop> expected token ( ] ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+                errCond("loop","]",tk->line);
         }
         else 
-            printf("ERROR: <loop> expected token  ( [ ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+            errCond("loop","[",tk->line);
     }
-    else    
-        printf("ERROR: <loop> expected token Loop instead of %s --line:%d\n",tk->tk_inst,tk->line);
+    else
+        errCond("loop","Loop",tk->line);
 }
 
 /* <assign> */
-void assign(char *filename, tlk *tk) {
+node_t *assign(char *filename, tlk *tk) {
+    node_t *node = getNode("<assign>");
     if (tk->tk_Id == Identifier_Tk) {
+        node->token = tk;
         scanner(filename,tk);
         if (tk->tk_Id == DblEq_Tk) {
+            node->token = tk;
             scanner(filename,tk);
-            expr(filename,tk);
+            node->child1 = expr(filename,tk);
             if (tk->tk_Id == Period_Tk) {
                 scanner(filename,tk);
-                return;
+                return node;
             }
             else   
-                printf("ERROR: <assign> expected token ( . ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+                errCond("assign",".",tk->line);
         }
         else   
-            printf("ERROR: <assign> expected token ( == ) instead of %s --line:%d\n",tk->tk_inst,tk->line);
+            errCond("assign","==",tk->line);
     }
     else    
-        printf("ERROR: <assign> expected token ID instead of %s --line:%d\n",tk->tk_inst,tk->line);
+        errCond("assign","ID",tk->line);
 }
 
 /* <RO> */
-void RO(char *filename, tlk *tk) {
+node_t *RO(char *filename, tlk *tk) {
+    node_t *node = getNode("<RO>");
     if (tk->tk_Id == Gt_Eq_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        return;
+        return node;
     }
     else if (tk->tk_Id == Lt_Eq_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        return;
+        return node;
     }
     else if (tk->tk_Id == Eq_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        return;
+        return node;
     }
     else if (tk->tk_Id == Gt_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        return;
+        return node;
     }
     else if (tk->tk_Id == Lt_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        return;
+        return node;
     }
     else if (tk->tk_Id == DnEq_Tk) {
+        node->token = tk;
         scanner(filename,tk);
-        return;
+        return node;
     }
     else
-        printf("ERROR: <RO> expected token >=> OR <=< OR = OR > OR < OR =!= instead of %s --line:%d\n",tk->tk_inst,tk->line);
+        printf("ERROR: <RO> expected token >=> OR <=< OR = OR > OR < OR =!= line:%d\n",tk->line);
+}
+
+//          Error messaging, what nonterminal in BNF, the token expected, and the line (approximation)
+void errCond(char *nonterm, char *token, int line) {
+    printf("<%s> Error: expected %s token line:%d\n",nonterm,token,line);
+    exit(1);
 }
