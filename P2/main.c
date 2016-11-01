@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "testscanner.h"
+#include "parser.h"
 #include "scanner.h"
 
 #define filenameSize 50
@@ -25,8 +26,8 @@ int main (int argc, char *argv[]) {
 		char *extension2 = ".fs16";
 		strcpy(file, filename);
 		strcat(file,extension);
-		testScanner(file);
-		//parser(file);
+		//testScanner(file);
+		parser(file);
 		//testScan(file);
 	}	
 

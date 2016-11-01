@@ -1,16 +1,3 @@
-Begin                 
-@comment        
-@comment
-
-Print[5] .
-
-
-End                        
-@anotherone
-Stop
-
-            
-
-    
-
-
+Begin
+Print[5].
+End

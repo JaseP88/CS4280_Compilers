@@ -9,9 +9,11 @@ void block(char *filename, tlk *tk);
 void vars(char *filename, tlk *tk);
 void mvars(char *filename, tlk *tk);
 void expr(char *filename, tlk *tk);
+void rpxe(char *filename, tlk *tk); //added to grammar
 void M(char *filename, tlk *tk);
+void N(char *filename, tlk *tk);    //added to grammar
 void T(char *filename, tlk *tk);
-void X(char *filename, tlk *tk);
+void X(char *filename, tlk *tk);    //added to grammar
 void F(char *filename, tlk *tk);
 void R(char *filename, tlk *tk);
 void stats(char *filename, tlk *tk);
