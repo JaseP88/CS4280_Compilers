@@ -16,7 +16,7 @@ node_t *parser(char *filename) {
 
     //printf("THE TOKEN AFTER ALL THATS DONE IS tokenID:%d--%s--%d\n",token->tk_Id,token->tk_inst,token->line);
     if (token->tk_Id != Eof_Tk) 
-        errCond("parser","EOF",token->line);    //prints error messages and exits
+        errCond("parser","EOF",token->tk_inst,token->line);    //prints error messages and exits
     
     else {
         printf("parser complete and is A-OK\n");
@@ -48,10 +48,10 @@ node_t *block(char *filename, tlk *tk) {
             return node; 
         }
         else
-            errCond("block","End",tk->line);
+            errCond("block","End",tk->tk_inst,tk->line);
     }
     else
-        errCond("block","Begin",tk->line);
+        errCond("block","Begin",tk->tk_inst,tk->line);
         //printf("ERROR: <block> expected Begin token instead of %s --line:%d\n",tk->tk_inst,tk->line);
 }
 
@@ -68,7 +68,7 @@ node_t *vars(char *filename, tlk *tk) {
             return node;
         }
         else
-            errCond("vars","ID",tk->line);
+            errCond("vars","ID",tk->tk_inst,tk->line);
     }
     else 
         return NULL; //empty production
@@ -89,10 +89,10 @@ node_t *mvars(char *filename, tlk *tk) {
                 return node;
             }
             else
-                errCond("mvars","ID",tk->line);
+                errCond("mvars","ID",tk->tk_inst,tk->line);
         }
         else
-            errCond("mvars",":",tk->line);
+            errCond("mvars",":",tk->tk_inst,tk->line);
     }
     else
         return NULL; //empty production
@@ -192,7 +192,7 @@ node_t *R(char *filename, tlk *tk) {
             return node;
         }
         else
-            errCond("R","]",tk->line);
+            errCond("R","]",tk->tk_inst,tk->line);
     }
     else if (tk->tk_Id == Identifier_Tk) {
         node->token = tk;
@@ -205,7 +205,7 @@ node_t *R(char *filename, tlk *tk) {
         return node;
     }
     else
-        errCond("R","[",tk->line);
+        errCond("R","[",tk->tk_inst,tk->line);
 }
 
 /* <stats> */
@@ -279,16 +279,16 @@ node_t *in(char *filename, tlk *tk) {
                     return node;
                 }
                 else
-                    errCond("in",".",tk->line);
+                    errCond("in",".",tk->tk_inst,tk->line);
             }
             else
-                errCond("<in>","ID",tk->line);
+                errCond("<in>","ID",tk->tk_inst,tk->line);
         }
         else
-            errCond("<in>",":",tk->line);
+            errCond("<in>",":",tk->tk_inst,tk->line);
     }
     else
-        errCond("<in>","Scan",tk->line);
+        errCond("<in>","Scan",tk->tk_inst,tk->line);
 }
 
 /* <out> */
@@ -306,16 +306,16 @@ node_t *out(char *filename, tlk *tk) {
                     return node;
                 }
                 else
-                    errCond("out",".",tk->line);
+                    errCond("out",".",tk->tk_inst,tk->line);
             }
             else
-                errCond("out","]",tk->line);
+                errCond("out","]",tk->tk_inst,tk->line);
         }
         else
-            errCond("out","[",tk->line);
+            errCond("out","[",tk->tk_inst,tk->line);
     }
     else
-        errCond("out","Print",tk->line);
+        errCond("out","Print",tk->tk_inst,tk->line);
 }
 
 /* <if> */
@@ -334,13 +334,13 @@ node_t *if_(char *filename, tlk *tk) {
                 return node;
             }
             else
-                errCond("if","Iff",tk->line);
+                errCond("if","Iff",tk->tk_inst,tk->line);
         }
         else
-            errCond("if","]",tk->line);
+            errCond("if","]",tk->tk_inst,tk->line);
     }
     else
-        errCond("if","[",tk->line);
+        errCond("if","[",tk->tk_inst,tk->line);
 }
 
 /* <loop> */
@@ -359,13 +359,13 @@ node_t *loop(char *filename, tlk *tk) {
                 return node;
             }
             else
-                errCond("loop","]",tk->line);
+                errCond("loop","]",tk->tk_inst,tk->line);
         }
         else 
-            errCond("loop","[",tk->line);
+            errCond("loop","[",tk->tk_inst,tk->line);
     }
     else
-        errCond("loop","Loop",tk->line);
+        errCond("loop","Loop",tk->tk_inst,tk->line);
 }
 
 /* <assign> */
@@ -383,13 +383,13 @@ node_t *assign(char *filename, tlk *tk) {
                 return node;
             }
             else   
-                errCond("assign",".",tk->line);
+                errCond("assign",".",tk->tk_inst,tk->line);
         }
         else   
-            errCond("assign","==",tk->line);
+            errCond("assign","==",tk->tk_inst,tk->line);
     }
     else    
-        errCond("assign","ID",tk->line);
+        errCond("assign","ID",tk->tk_inst,tk->line);
 }
 
 /* <RO> */
@@ -430,7 +430,7 @@ node_t *RO(char *filename, tlk *tk) {
 }
 
 //          Error messaging, what nonterminal in BNF, the token expected, and the line (approximation)
-void errCond(char *nonterm, char *token, int line) {
-    printf("<%s> Error: expected %s token line:%d\n",nonterm,token,line);
+void errCond(char *nonterm, char *token,char *beforeTk, int line) {
+    printf("<%s> Error: expected %s token before %s line:%d\n",nonterm,token,beforeTk,line);
     exit(1);
 }

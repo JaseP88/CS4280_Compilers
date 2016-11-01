@@ -27,5 +27,6 @@ node_t *loop(char *filename, tlk *tk);
 node_t *assign(char *filename, tlk *tk);
 node_t *RO(char *filename, tlk *tk);
 
-void errCond(char *nonterm, char *token, int line);
+void errCond(char *nonterm, char *token, char *beforetk, int line);
+
 #endif
