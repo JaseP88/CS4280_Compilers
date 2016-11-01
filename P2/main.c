@@ -27,6 +27,7 @@ int main (int argc, char *argv[]) {
 		strcat(file,extension);
 		testScanner(file);
 		//parser(file);
+		//testScan(file);
 	}	
 
 	/* read from keyboard */

@@ -93,14 +93,16 @@ int getToken (char *filename, tlk *TOKEN) {
 	int maxchar;
 	tlk token;
 	int i;
-	
+	int maxline = findmaxLine(filename);
 	/* filters the line in file and remove comments and get max char in that line */
 	filter (filename, line_position);
 	maxchar = findmaxChar();
 	
-	while (maxchar == 1 && line_str[maxchar-1] == 10) {	//if line is carriage return move to next line
+	while (maxchar == 1 && line_str[maxchar-1] == 10) {	//if line is carriage return, move to next line
 		line_position++;
 		index_position=0;
+		if (line_position>maxline)	//if line is outside of maxline end
+			break;
 		filter (filename, line_position);		//gets the next line into line_str buffer
 		maxchar = findmaxChar();
 	}
@@ -108,13 +110,15 @@ int getToken (char *filename, tlk *TOKEN) {
 	while (isEmptyLine(line_str) == 0) {	//if line is a comment or just WS
 		line_position++;
 		index_position=0;
+		if (line_position>maxline)
+			break;
 		filter (filename, line_position);
 		maxchar = findmaxChar();
 	}
-	
+	printf("MAXCHAR IS:%d\n",maxchar);
 	for (i=index_position; i<maxchar; i++) {
 		printf("index_position: %d -- i:%d\n",index_position, i);
-		printf("%c\n",line_str[i]);
+		printf("%c--%d\n",line_str[i],line_str[i]);
 		//printf("\n");
 		token = scan(i);
 			
@@ -132,7 +136,7 @@ int getToken (char *filename, tlk *TOKEN) {
 	index_position=0;
 	filter(filename, line_position);
 	token = scan(index_position);
-	printf("%d",line_str[maxchar]);
+	printf("**ENDING at maxchar:%d, at maxchar-1:%d maxchar-2:%d\n",line_str[maxchar],line_str[maxchar-1],line_str[maxchar-2]);
 	if (token.wait == 0) {
 		TOKEN->tk_Id = token.tk_Id;
 		TOKEN->tk_inst = token.tk_inst;
