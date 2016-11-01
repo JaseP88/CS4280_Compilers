@@ -93,7 +93,9 @@ int getToken (char *filename, tlk *TOKEN) {
 	int maxchar;
 	tlk token;
 	int i;
+	
 	int maxline = findmaxLine(filename);
+
 	/* filters the line in file and remove comments and get max char in that line */
 	filter (filename, line_position);
 	maxchar = findmaxChar();
@@ -115,18 +117,18 @@ int getToken (char *filename, tlk *TOKEN) {
 		filter (filename, line_position);
 		maxchar = findmaxChar();
 	}
-	printf("MAXCHAR IS:%d\n",maxchar);
+	//printf("MAXCHAR IS:%d\n",maxchar);
 	for (i=index_position; i<maxchar; i++) {
-		printf("index_position: %d -- i:%d\n",index_position, i);
-		printf("%c--%d\n",line_str[i],line_str[i]);
-		//printf("\n");
+		//printf("index_position: %d -- i:%d\n",index_position, i);
+		//printf("%c--%d\n",line_str[i],line_str[i]);
+		
 		token = scan(i);
 			
 		if (token.wait == 0) {
 			TOKEN->tk_Id = token.tk_Id;
 			TOKEN->tk_inst = token.tk_inst;
 			TOKEN->line = token.line;
-			index_position = i+1;
+			index_position = i;
 			return 1;
 		}
 		else
@@ -134,18 +136,7 @@ int getToken (char *filename, tlk *TOKEN) {
 	}
 	line_position++;
 	index_position=0;
-	filter(filename, line_position);
-	token = scan(index_position);
-	printf("**ENDING at maxchar:%d, at maxchar-1:%d maxchar-2:%d\n",line_str[maxchar],line_str[maxchar-1],line_str[maxchar-2]);
-	if (token.wait == 0) {
-		TOKEN->tk_Id = token.tk_Id;
-		TOKEN->tk_inst = token.tk_inst;
-		TOKEN->line = token.line;
-		return 1;
-	}
-	else {
-		return -1;
-	}	
+	return -1;
 }
 
 /* scan function: scans each the stored characters in line_str buffer and pass
@@ -241,6 +232,9 @@ tlk scan(int index) {
 			break;
 		case ']':
 			k = rgtbracket;
+			break;
+		case '\t':
+			k = WS;
 			break;
 		case 10:	//changes thew newline to WS
 			//line_str[index] = ' ';	//pass WS to Driver methods if newline is detected

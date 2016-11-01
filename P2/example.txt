@@ -1,14 +1,16 @@
-Vars Var Id
-
-Cheap
+Begin                 
+@comment        
 @comment
-                            @commenthere
 
-      
+Print[5] .
+
+
+End                        
+@anotherone
+Stop
+
+            
+
     
 
-       
-
-@newcomment
-welcome             
 
