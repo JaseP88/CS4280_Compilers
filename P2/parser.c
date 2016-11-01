@@ -4,6 +4,7 @@
 #include "parser.h"
 #include "scanner.h"
 #include "token.h"
+#include "node.h"
 
 /* auxillary function  <*/
 void parser(char *filename) {
@@ -13,7 +14,7 @@ void parser(char *filename) {
     program(filename,token); //call program
     //scanner(filename,token);
 
-    printf("THE TOKEN AFTER ALL THATS DONE IS %d--%s--%d\n",token->tk_Id,token->tk_inst,token->line);
+    printf("THE TOKEN AFTER ALL THATS DONE IS tokenID:%d--%s--%d\n",token->tk_Id,token->tk_inst,token->line);
 
     if (token->tk_Id != Eof_Tk) {
         printf("ERROR: <parser> expected EOF token, EOF token not found\n");
