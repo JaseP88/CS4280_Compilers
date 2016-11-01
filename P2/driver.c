@@ -55,7 +55,6 @@ tlk FADriver(int currState, int keyPassed, char c) {
 
 	tlk token;
 	int nextState;
-
 	nextState = table[currState][keyPassed];
 
 	if (nextState <= Error) {
@@ -85,7 +84,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 
 			/* speacial case 1001, check if identifier string is keyword */
 			case 1001:
-				if (strncmp(strng, tokenString[3],5) == 0) {	//Begin KW
+				if (strcmp(strng, tokenString[3]) == 0) {	//Begin KW
 					token.tk_Id = Bgn_Tk;
 					token.tk_inst = tokenString[3];
 					token.line = line_num;
@@ -97,7 +96,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[4],3) == 0) {	//End KW
+				else if (strcmp(strng, tokenString[4]) == 0) {	//End KW
 					token.tk_Id = End_Tk;
 					token.tk_inst = tokenString[4];
 					token.line = line_num;
@@ -109,7 +108,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[5],5) == 0) {	//Start KW
+				else if (strcmp(strng, tokenString[5]) == 0) {	//Start KW
 					token.tk_Id = Strt_Tk;
 					token.tk_inst = tokenString[5];
 					token.line = line_num;
@@ -121,7 +120,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[6],4) == 0) {	//Stop KW
+				else if (strcmp(strng, tokenString[6]) == 0) {	//Stop KW
 					token.tk_Id = Stp_Tk;
 					token.tk_inst = tokenString[6];
 					token.line = line_num;
@@ -133,7 +132,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[7],3) == 0) {	//Iff KW
+				else if (strcmp(strng, tokenString[7]) == 0) {	//Iff KW
 					token.tk_Id = Iff_Tk;
 					token.tk_inst = tokenString[7];
 					token.line = line_num;
@@ -145,7 +144,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[8],4) == 0) {	//Loop KW
+				else if (strcmp(strng, tokenString[8]) == 0) {	//Loop KW
 					token.tk_Id = Loop_Tk;
 					token.tk_inst = tokenString[8];
 					token.line = line_num;
@@ -157,7 +156,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[9],4) == 0) {	//Void KW
+				else if (strcmp(strng, tokenString[9]) == 0) {	//Void KW
 					token.tk_Id = Void_Tk;
 					token.tk_inst = tokenString[9];
 					token.line = line_num;
@@ -169,7 +168,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[10],3) == 0) {	//Var KW
+				else if (strcmp(strng, tokenString[10]) == 0) {	//Var KW
 					token.tk_Id = Var_Tk;
 					token.tk_inst = tokenString[10];
 					token.line = line_num;
@@ -181,7 +180,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[11],3) == 0) {	//Int KW
+				else if (strcmp(strng, tokenString[11]) == 0) {	//Int KW
 					token.tk_Id = Int_Tk;
 					token.tk_inst = tokenString[11];
 					token.line = line_num;
@@ -193,7 +192,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[12],4) == 0) {	//Call KW
+				else if (strcmp(strng, tokenString[12]) == 0) {	//Call KW
 					token.tk_Id = Call_Tk;
 					token.tk_inst = tokenString[12];
 					token.line = line_num;
@@ -205,7 +204,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[13],6) == 0) {	//Return KW
+				else if (strcmp(strng, tokenString[13]) == 0) {	//Return KW
 					token.tk_Id = Return_Tk;
 					token.tk_inst = tokenString[13];
 					token.line = line_num;
@@ -217,7 +216,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[14],4) == 0) {	//Scan KW
+				else if (strcmp(strng, tokenString[14]) == 0) {	//Scan KW
 					token.tk_Id = Scan_Tk;
 					token.tk_inst = tokenString[14];
 					token.line = line_num;
@@ -229,7 +228,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[15],5) == 0) {	//Print KW
+				else if (strcmp(strng, tokenString[15]) == 0) {	//Print KW
 					token.tk_Id = Prnt_Tk;
 					token.tk_inst = tokenString[15];
 					token.line = line_num;
@@ -241,7 +240,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 					return token;
 				}
 
-				else if (strncmp(strng, tokenString[16],7) == 0) {	//Program KW
+				else if (strcmp(strng, tokenString[16]) == 0) {	//Program KW
 					token.tk_Id = Prg_Tk;
 					token.tk_inst = tokenString[16];
 					token.line = line_num;
@@ -573,7 +572,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 	}
 
 	else {
-
+		
 		state = nextState;
 		token.wait = 1;	//token is in a state waiting for more info (lookahead)
 		
@@ -582,6 +581,7 @@ tlk FADriver(int currState, int keyPassed, char c) {
 		if (c > 32) {
 			strng[indx] = c;
 			indx++;	
+			strng[indx] = '\0';
 		}
 		
 		return token;
