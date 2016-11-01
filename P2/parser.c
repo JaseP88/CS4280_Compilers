@@ -11,7 +11,7 @@ void parser(char *filename) {
 
     scanner(filename,token); //retrieve token
     program(filename,token); //call program
-    //scanner(filename,token);
+    scanner(filename,token);
 
     if (token->tk_Id != Eof_Tk) {
         printf("ERROR: <parser> expected EOF token, EOF token not found\n");
