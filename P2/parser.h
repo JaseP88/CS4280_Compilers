@@ -4,7 +4,7 @@
 #include "token.h"
 #include "node.h"
 
-node_t *parser(char *filename);  //auxillary function
+void parser(char *filename);  //auxillary function
 node_t *program(char *filename, tlk *tk);
 node_t *block(char *filename, tlk *tk);
 node_t *vars(char *filename, tlk *tk);

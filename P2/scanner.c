@@ -102,18 +102,20 @@ int getToken (char *filename, tlk *TOKEN) {
 	
 	while (maxchar == 1 && line_str[maxchar-1] == 10) {	//if line is carriage return, move to next line
 		line_position++;
-		index_position=0;
 		if (line_position>maxline)	//if line is outside of maxline end
 			break;
+		
+		index_position=0;
 		filter (filename, line_position);		//gets the next line into line_str buffer
 		maxchar = findmaxChar();
 	}
 
 	while (isEmptyLine(line_str) == 0) {	//if line is a comment or just WS
 		line_position++;
-		index_position=0;
 		if (line_position>maxline)
 			break;
+		
+		index_position=0;
 		filter (filename, line_position);
 		maxchar = findmaxChar();
 	}

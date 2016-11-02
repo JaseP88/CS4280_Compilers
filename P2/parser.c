@@ -5,37 +5,43 @@
 #include "scanner.h"
 #include "token.h"
 #include "node.h"
+#include "treePrint.h"
+
+static int level = 0;
 
 /* auxillary function  <*/
-node_t *parser(char *filename) {
+void parser(char *filename) {
     tlk *token = (tlk *)malloc(sizeof(tlk));    //create token in heap memory
     node_t *root;
 
     scanner(filename,token); //retrieve token
     root = program(filename,token); //call program
+    //printf("%s\n",root->tok->tk_inst);
 
-    //printf("THE TOKEN AFTER ALL THATS DONE IS tokenID:%d--%s--%d\n",token->tk_Id,token->tk_inst,token->line);
     if (token->tk_Id != Eof_Tk) 
         errCond("parser","EOF",token->tk_inst,token->line);    //prints error messages and exits
     
     else {
         printf("parser complete and is A-OK\n");
-        return root;
+        printTree(root);
     }
 }
 
 /* <program> */
 node_t *program(char *filename, tlk *tk) {
-    node_t *node = getNode("program");  //create node for <program> and label it 
+    node_t *node = getNode("program",level);  //create node for <program> and label it and also get level of the node
+    level++;
+    
     node->child1 =  vars(filename,tk);
+    
     node->child2  = block(filename,tk);
-    //node->child3 = NULL;
     return node;
 }
 
 /* <block> */
 node_t *block(char *filename, tlk *tk) {
-    node_t *node = getNode("<block>");   //create node for <block> and label it
+    node_t *node = getNode("<block>",level);   //create node for <block> and label it
+    level++;
 
     if (tk->tk_Id == Bgn_Tk) {  //structural token no need to store
         scanner(filename,tk);   //consume the token and get new token
@@ -57,14 +63,21 @@ node_t *block(char *filename, tlk *tk) {
 
 /* <vars> */
 node_t *vars(char *filename, tlk *tk) {
-    node_t *node = getNode("<vars>");
+    node_t *temp = getNode("<vars>",level);
+    node_t *node;
+    level++;
 
     if (tk->tk_Id == Var_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == Identifier_Tk) {   //save this semantic token
-            node->token = tk;               //saving.....
+            temp->tok = tk;               //saving.....
+            
+            printf("**%d -- %d -- %s\n",node->tok->tk_Id,node->tok->line,node->tok->tk_inst);
             scanner(filename,tk);
-            node->child1 = mvars(filename,tk);
+            printf("**%d -- %d -- %s\n",node->tok->tk_Id,node->tok->line,node->tok->tk_inst);
+            temp->child1 = mvars(filename,tk);
+            node = temp;
+            free(temp);
             return node;
         }
         else
@@ -76,14 +89,15 @@ node_t *vars(char *filename, tlk *tk) {
 
 /* <mvars> */
 node_t *mvars(char *filename, tlk *tk) {
-    node_t *node = getNode("<mvars>");
+    node_t *node = getNode("<mvars>",level);
+    level++;
 
     if (tk->tk_Id == Cln_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == Cln_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Identifier_Tk) {
-                node->token = tk;
+                node->tok = tk;
                 scanner(filename,tk);
                 node->child1 = mvars(filename,tk);
                 return node;
@@ -100,7 +114,9 @@ node_t *mvars(char *filename, tlk *tk) {
 
 /* <expr> */
 node_t *expr(char *filename, tlk *tk) {
-    node_t *node = getNode("<expr>");
+    node_t *node = getNode("<expr>",level);
+    level++;
+
     node->child1 = M(filename,tk);
     node->child2 = rpxe(filename,tk);
     return node;
@@ -108,9 +124,10 @@ node_t *expr(char *filename, tlk *tk) {
 
 /* <rpxe> backwards HAH */
 node_t *rpxe(char *filename, tlk *tk) {
-    node_t *node = getNode("<rpxe>");
+    node_t *node = getNode("<rpxe>",level);
+    level++;
     if (tk->tk_Id == Plus_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         node->child1 = expr(filename,tk);
         return node;
@@ -121,7 +138,9 @@ node_t *rpxe(char *filename, tlk *tk) {
 
 /* <M> */
 node_t *M(char *filename, tlk *tk) {
-    node_t *node = getNode("<M>");
+    node_t *node = getNode("<M>",level);
+    level++;
+
     node->child1 = T(filename,tk);
     node->child2 = N(filename,tk);
     return node;
@@ -129,9 +148,11 @@ node_t *M(char *filename, tlk *tk) {
 
 /* <N> */
 node_t *N(char *filename, tlk *tk) {
-    node_t *node = getNode("<N>");
+    node_t *node = getNode("<N>",level);
+    level++;
+
     if (tk->tk_Id == Minus_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         node->child1 = M(filename,tk);
         return node;
@@ -142,7 +163,8 @@ node_t *N(char *filename, tlk *tk) {
 
 /* <T> */
 node_t *T(char *filename, tlk *tk) {
-    node_t *node = getNode("<T>");
+    node_t *node = getNode("<T>",level);
+    level++;
     node->child1 = F(filename,tk);
     node->child2 = X(filename,tk);
     return node;
@@ -150,15 +172,17 @@ node_t *T(char *filename, tlk *tk) {
 
 /* <X> */
 node_t *X(char *filename, tlk *tk) {
-    node_t *node = getNode("<X>");
+    node_t *node = getNode("<X>",level);
+    level++;
+
     if (tk->tk_Id == Ast_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         node->child1 = T(filename,tk);
         return node;
     }
     else if (tk->tk_Id == BkSlash_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         node->child1 = T(filename,tk);
         return node;
@@ -169,9 +193,11 @@ node_t *X(char *filename, tlk *tk) {
 
 /* <F> */
 node_t *F(char *filename, tlk *tk) {
-    node_t *node = getNode("<F>");
+    node_t *node = getNode("<F>",level);
+    level++;
+
     if (tk->tk_Id == Minus_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         node->child1 = F(filename,tk);
         return node;
@@ -183,10 +209,13 @@ node_t *F(char *filename, tlk *tk) {
 
 /* <R> */
 node_t *R(char *filename, tlk *tk) {
-    node_t *node = getNode("<R>");
+    node_t *node = getNode("<R>",level);
+    level++;
+
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
         node->child1 = expr(filename,tk);
+     
         if (tk->tk_Id == RgtBracket_Tk) {
             scanner(filename,tk);
             return node;
@@ -195,12 +224,12 @@ node_t *R(char *filename, tlk *tk) {
             errCond("R","]",tk->tk_inst,tk->line);
     }
     else if (tk->tk_Id == Identifier_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == IntLiteral_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         return node;
     }
@@ -210,7 +239,9 @@ node_t *R(char *filename, tlk *tk) {
 
 /* <stats> */
 node_t *stats(char *filename, tlk *tk) {
-    node_t *node = getNode("<stats>");
+    node_t *node = getNode("<stats>",level);
+    level++;
+
     node->child1 = stat(filename,tk);
     node->child2 = mStat(filename,tk);
     return node;
@@ -218,7 +249,9 @@ node_t *stats(char *filename, tlk *tk) {
 
 /* <mStats> */
 node_t *mStat(char *filename, tlk *tk) {
-    node_t *node = getNode("<mStat>");
+    node_t *node = getNode("<mStat>",level);
+    level++;
+
     //prediction ??
     if (tk->tk_Id == Scan_Tk || tk->tk_Id == Prnt_Tk || tk->tk_Id == Bgn_Tk || tk->tk_Id == LftBracket_Tk || tk->tk_Id == Loop_Tk || tk->tk_Id == Identifier_Tk) {
         //don't consume the token yet'
@@ -232,7 +265,9 @@ node_t *mStat(char *filename, tlk *tk) {
 
 /* <stat> */
 node_t *stat(char *filename, tlk *tk) {
-    node_t *node = getNode("<stat>");
+    node_t *node = getNode("<stat>",level);
+    level++;
+
     if (tk->tk_Id == Scan_Tk) {
         //dont consume token yet
         node->child1 = in(filename,tk);
@@ -266,13 +301,15 @@ node_t *stat(char *filename, tlk *tk) {
 
 /* <in> */
 node_t *in(char *filename, tlk *tk) {
-    node_t *node = getNode("<in>");
+    node_t *node = getNode("<in>",level);
+    level++;
+
     if (tk->tk_Id == Scan_Tk) {
         scanner(filename,tk);   //finally consume here
         if (tk->tk_Id == Cln_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Identifier_Tk) {
-                node->token = tk;
+                node->tok = tk;
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
                     scanner(filename,tk);
@@ -293,7 +330,9 @@ node_t *in(char *filename, tlk *tk) {
 
 /* <out> */
 node_t *out(char *filename, tlk *tk) {
-    node_t *node = getNode("<out>");
+    node_t *node = getNode("<out>",level);
+    level++;
+
     if (tk->tk_Id == Prnt_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
@@ -320,7 +359,9 @@ node_t *out(char *filename, tlk *tk) {
 
 /* <if> */
 node_t *if_(char *filename, tlk *tk) {
-    node_t *node = getNode("<if>");
+    node_t *node = getNode("<if>",level);
+    level++;
+
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
         node->child1 = expr(filename,tk);
@@ -345,7 +386,9 @@ node_t *if_(char *filename, tlk *tk) {
 
 /* <loop> */
 node_t *loop(char *filename, tlk *tk) {
-    node_t *node = getNode("<loop>");
+    node_t *node = getNode("<loop>",level);
+    level++;
+
     if (tk->tk_Id == Loop_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
@@ -370,12 +413,14 @@ node_t *loop(char *filename, tlk *tk) {
 
 /* <assign> */
 node_t *assign(char *filename, tlk *tk) {
-    node_t *node = getNode("<assign>");
+    node_t *node = getNode("<assign>",level);
+    level++;
+
     if (tk->tk_Id == Identifier_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         if (tk->tk_Id == DblEq_Tk) {
-            node->token = tk;
+            node->tok = tk;
             scanner(filename,tk);
             node->child1 = expr(filename,tk);
             if (tk->tk_Id == Period_Tk) {
@@ -394,34 +439,35 @@ node_t *assign(char *filename, tlk *tk) {
 
 /* <RO> */
 node_t *RO(char *filename, tlk *tk) {
-    node_t *node = getNode("<RO>");
+    node_t *node = getNode("<RO>",level);
+    level++;
     if (tk->tk_Id == Gt_Eq_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == Lt_Eq_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == Eq_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == Gt_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == Lt_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == DnEq_Tk) {
-        node->token = tk;
+        node->tok = tk;
         scanner(filename,tk);
         return node;
     }
@@ -429,7 +475,7 @@ node_t *RO(char *filename, tlk *tk) {
         printf("ERROR: <RO> expected token >=> OR <=< OR = OR > OR < OR =!= line:%d\n",tk->line);
 }
 
-//          Error messaging, what nonterminal in BNF, the token expected, and the line (approximation)
+//          Error messaging, what nonterminal in BNF, the token expected before next token, and the line (approximation)
 void errCond(char *nonterm, char *token,char *beforeTk, int line) {
     printf("<%s> Error: expected %s token before %s line:%d\n",nonterm,token,beforeTk,line);
     exit(1);
