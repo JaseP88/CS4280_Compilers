@@ -1,9 +1,7 @@
+Var dog::y ::z ::a ::b
 
-
-Var x::y
 Begin
-
-
-
-Scan:test.
+Var cat ::just
+Scan:thing.
+Print[5*-8].
 End
