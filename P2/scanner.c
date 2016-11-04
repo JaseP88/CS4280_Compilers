@@ -5,6 +5,7 @@
 #include "token.h"
 #include "driver.h"
 #include "scanner.h"
+#include "node.h"
 
 #define Buffersize 256	//define the buffersize a line
 

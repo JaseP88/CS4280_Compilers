@@ -14,8 +14,8 @@ void printTree(node_t *tree) {
     }
 
     else {
-        if (tree->tok != NULL) 
-            printf("%*c%s:%d--%d\n",tree->level*2,' ',tree->label,tree->level,tree->tok->tk_Id);
+        if (tree->tok.tk_Id != -1) 
+            printf("%*c%s  lev:%d--ID:%d --line:%d--inst:%s\n",tree->level*2,' ',tree->label,tree->level,tree->tok.tk_Id,tree->tok.line,tree->tok.tk_inst);
             //printf("%*c%s %-9d / %d / %s\n",tree->level*2,' ',tree->label,tree->token->tk_Id,tree->token->line,tree->token->tk_inst);
             //printf("ok %d\n",n);
 

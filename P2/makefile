@@ -6,13 +6,13 @@ CFLAGS = -g
 
 all: parser
 
-testScanner: main.o scanner.o driver.o token.o testscanner.o
-	$(CC) -o $@ $(CFLAGS) main.o scanner.o driver.o token.o testscanner.o	
+scanner: main.o scanner.o driver.o token.o testscanner.o treePrint.o node.o
+	$(CC) -o $@ $(CFLAGS) main.o scanner.o driver.o token.o testscanner.o	treePrint.o node.o
 
 parser: main.o scanner.o driver.o token.o parser.o node.o treePrint.o
 	$(CC) -o $@ $(CFLAGS) main.o scanner.o driver.o token.o parser.o node.o treePrint.o
 
 clean:
-	rm -f parser testScanner
+	rm -f parser scanner
 	rm -f *.o
 	

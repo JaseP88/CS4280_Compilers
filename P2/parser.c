@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "parser.h"
 #include "scanner.h"
@@ -16,7 +17,6 @@ void parser(char *filename) {
 
     scanner(filename,token); //retrieve token
     root = program(filename,token); //call program
-    //printf("%s\n",root->tok->tk_inst);
 
     if (token->tk_Id != Eof_Tk) 
         errCond("parser","EOF",token->tk_inst,token->line);    //prints error messages and exits
@@ -33,7 +33,6 @@ node_t *program(char *filename, tlk *tk) {
     level++;
     
     node->child1 =  vars(filename,tk);
-    
     node->child2  = block(filename,tk);
     return node;
 }
@@ -63,32 +62,34 @@ node_t *block(char *filename, tlk *tk) {
 
 /* <vars> */
 node_t *vars(char *filename, tlk *tk) {
-    node_t *temp = getNode("<vars>",level);
-    node_t *node;
+    tlk temp;
+    char *tempname;
+    node_t *node = getNode("<vars>",level);
     level++;
 
     if (tk->tk_Id == Var_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == Identifier_Tk) {   //save this semantic token
-            temp->tok = tk;               //saving.....
-            
-            printf("**%d -- %d -- %s\n",node->tok->tk_Id,node->tok->line,node->tok->tk_inst);
+            temp = *tk;
+            tempname = tk->tk_inst;
+            //printf("testname %s line:%d\n",tempname,);
+            node->tok.tk_Id = temp.tk_Id;
+            node->tok.tk_inst = tempname;
+            node->tok.line = temp.line;
             scanner(filename,tk);
-            printf("**%d -- %d -- %s\n",node->tok->tk_Id,node->tok->line,node->tok->tk_inst);
-            temp->child1 = mvars(filename,tk);
-            node = temp;
-            free(temp);
+            node->child1 = mvars(filename,tk);
             return node;
         }
         else
             errCond("vars","ID",tk->tk_inst,tk->line);
     }
-    else 
-        return NULL; //empty production
+
+    return NULL; //empty production
 }
 
 /* <mvars> */
 node_t *mvars(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<mvars>",level);
     level++;
 
@@ -97,7 +98,8 @@ node_t *mvars(char *filename, tlk *tk) {
         if (tk->tk_Id == Cln_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Identifier_Tk) {
-                node->tok = tk;
+                temp = *tk;
+                node->tok = temp;
                 scanner(filename,tk);
                 node->child1 = mvars(filename,tk);
                 return node;
@@ -108,8 +110,8 @@ node_t *mvars(char *filename, tlk *tk) {
         else
             errCond("mvars",":",tk->tk_inst,tk->line);
     }
-    else
-        return NULL; //empty production
+ 
+    return NULL; //empty production
 }
 
 /* <expr> */
@@ -124,16 +126,18 @@ node_t *expr(char *filename, tlk *tk) {
 
 /* <rpxe> backwards HAH */
 node_t *rpxe(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<rpxe>",level);
     level++;
     if (tk->tk_Id == Plus_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         node->child1 = expr(filename,tk);
         return node;
     }
-    else
-        return NULL;
+    
+    return NULL;
 }
 
 /* <M> */
@@ -148,17 +152,19 @@ node_t *M(char *filename, tlk *tk) {
 
 /* <N> */
 node_t *N(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<N>",level);
     level++;
 
     if (tk->tk_Id == Minus_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         node->child1 = M(filename,tk);
         return node;
     }
-    else
-        return NULL;
+    
+    return NULL;
 }
 
 /* <T> */
@@ -170,45 +176,52 @@ node_t *T(char *filename, tlk *tk) {
     return node;
 }
 
-/* <X> */
+/* <X> */ 
 node_t *X(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<X>",level);
     level++;
 
     if (tk->tk_Id == Ast_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         node->child1 = T(filename,tk);
         return node;
     }
     else if (tk->tk_Id == BkSlash_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         node->child1 = T(filename,tk);
         return node;
     }
-    else 
-        return NULL;
+     
+    return NULL;
 }
 
 /* <F> */
 node_t *F(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<F>",level);
     level++;
 
     if (tk->tk_Id == Minus_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         node->child1 = F(filename,tk);
         return node;
     }
     else 
         node->child1 = R(filename,tk);
+
     return node;
 }
 
 /* <R> */
 node_t *R(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<R>",level);
     level++;
 
@@ -224,12 +237,14 @@ node_t *R(char *filename, tlk *tk) {
             errCond("R","]",tk->tk_inst,tk->line);
     }
     else if (tk->tk_Id == Identifier_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == IntLiteral_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         return node;
     }
@@ -265,6 +280,7 @@ node_t *mStat(char *filename, tlk *tk) {
 
 /* <stat> */
 node_t *stat(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<stat>",level);
     level++;
 
@@ -290,6 +306,8 @@ node_t *stat(char *filename, tlk *tk) {
         return node;
     }
     else if (tk->tk_Id == Identifier_Tk) {
+        temp = *tk;
+        node->tok = temp;
         node->child1 = assign(filename,tk);
         return node;
     }
@@ -301,6 +319,7 @@ node_t *stat(char *filename, tlk *tk) {
 
 /* <in> */
 node_t *in(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<in>",level);
     level++;
 
@@ -309,7 +328,8 @@ node_t *in(char *filename, tlk *tk) {
         if (tk->tk_Id == Cln_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Identifier_Tk) {
-                node->tok = tk;
+                temp = *tk;
+                node->tok = temp;
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
                     scanner(filename,tk);
@@ -413,14 +433,17 @@ node_t *loop(char *filename, tlk *tk) {
 
 /* <assign> */
 node_t *assign(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<assign>",level);
     level++;
 
     if (tk->tk_Id == Identifier_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         if (tk->tk_Id == DblEq_Tk) {
-            node->tok = tk;
+            temp = *tk;
+            node->tok = temp;
             scanner(filename,tk);
             node->child1 = expr(filename,tk);
             if (tk->tk_Id == Period_Tk) {
@@ -439,35 +462,42 @@ node_t *assign(char *filename, tlk *tk) {
 
 /* <RO> */
 node_t *RO(char *filename, tlk *tk) {
+    tlk temp;
     node_t *node = getNode("<RO>",level);
     level++;
     if (tk->tk_Id == Gt_Eq_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == Lt_Eq_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == Eq_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == Gt_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == Lt_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == DnEq_Tk) {
-        node->tok = tk;
+        temp = *tk;
+        node->tok = temp;
         scanner(filename,tk);
         return node;
     }

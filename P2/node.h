@@ -3,14 +3,14 @@
 
 #include "token.h"
 
-typedef struct node_t {
+typedef struct nodestruct {
     char *label;                    //label
-    tlk  *tok;                    //token
+    tlk  tok;                    //token
     int level;                      //level of the node
-    struct node_t *child1;          //child1 
-    struct node_t *child2;          //child2
-    struct node_t *child3;
-    struct node_t *child4;
+    struct nodestruct *child1;          //child1 
+    struct nodestruct *child2;          //child2
+    struct nodestruct *child3;
+    struct nodestruct *child4;
 } node_t;
 
 node_t *getNode(char *label, int level);
