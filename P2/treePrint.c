@@ -14,10 +14,18 @@ void printTree(node_t *tree) {
     }
 
     else {
-        if (tree->tok.tk_Id != -1) 
-            printf("%*c%s  lev:%d--ID:%d --line:%d--inst:%s\n",tree->level*2,' ',tree->label,tree->level,tree->tok.tk_Id,tree->tok.line,tree->tok.tk_inst);
-            //printf("%*c%s %-9d / %d / %s\n",tree->level*2,' ',tree->label,tree->token->tk_Id,tree->token->line,tree->token->tk_inst);
-            //printf("ok %d\n",n);
+        printf("%*c%s ",tree->level*2,' ',tree->label,tree->level);
+
+        if (tree->tok.tk_Id != -1 && tree->tok2.tk_Id != -1) { //if 2 semantic token in node, only 1 BNF <assign> has 2 semantic token
+            printf(" tokenID1:%d tok1line:%d token1:%s / tokenID2:%d toke2line:%d token2:%s\n",tree->tok.tk_Id,tree->tok.line,tree->instance,tree->tok2.tk_Id,tree->tok2.line,tree->tok2.tk_inst);
+        }
+        else if (tree->tok.tk_Id != -1 && tree->instance != NULL)   //if only 1 semantic token and is Identifier or integer literal
+            printf(" tokenID:%d  line:%d  semantic token:%s\n",tree->tok.tk_Id,tree->tok.line,tree->instance);
+        
+        else if (tree->tok.tk_Id != -1) //if only 1 semantic token and is an operator
+            printf(" tokenID:%d line:%d semantic token:%s\n",tree->tok.tk_Id,tree->tok.line,tree->tok.tk_inst);  
+
+        printf("\n");
 
         if (tree->child1 != NULL)
             printTree(tree->child1);
