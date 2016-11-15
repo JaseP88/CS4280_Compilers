@@ -31,6 +31,7 @@ void parser(char *filename) {
 node_t *program(char *filename, tlk *tk) {
     int i;
     int level = 0;
+    int scope = 0;
     node_t *node = getNode("<program>",level);  //create node for <program> and label it and also get level of the node
     
     /* CREATE GLOBAL VAR COUNT FOR FS16 LANG */
@@ -41,18 +42,23 @@ node_t *program(char *filename, tlk *tk) {
     Stack *stack = (Stack *)malloc(sizeof(Stack));
     initStack(stack);
     
+    printf("Global Scope\n");
     node->child1 =  vars(filename,tk,level,varCount,stack);   
-    node->child2  = block(filename,tk,level,stack);
+    node->child2  = block(filename,tk,level,stack,scope);
     
+/* Maybe no need to pop global scopes???   
+    printf("Global Scope End\n");
+    //pop the global variables of fs16 language
     for (i=0; i<*varCount; i++) 
         pop(stack);
-
+*/
     return node;
 }
 
 /* <block> */
-node_t *block(char *filename, tlk *tk, int level, Stack *s) {
+node_t *block(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
+    scope++;
     int i;
 
     node_t *node = getNode("<block>",level);   //create node for <block> and label it
@@ -60,13 +66,16 @@ node_t *block(char *filename, tlk *tk, int level, Stack *s) {
     int *varCount = (int *)malloc(sizeof(int)); //create the varCount for each block scope
     *varCount = 0;  //init set the varCount to 0
 
+    printf("Scope Level %d:\n",scope);
     if (tk->tk_Id == Bgn_Tk) {  //structural token no need to store
         scanner(filename,tk);   //consume the token and get new token
         
         node->child1 = vars(filename,tk,level,varCount,s);
-        node->child2 = stats(filename,tk,level,s);
+        node->child2 = stats(filename,tk,level,s,scope);
    
         if (tk->tk_Id == End_Tk) {
+            printf("\n\tScope Level %d End\n",scope);
+            //pop the instance of each block when done
             for (i=0; i<*varCount; i++) 
                 pop(s);
             
@@ -309,25 +318,25 @@ node_t *R(char *filename, tlk *tk, int level) {
 }
 
 /* <stats> */
-node_t *stats(char *filename, tlk *tk, int level, Stack *s) {
+node_t *stats(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
     node_t *node = getNode("<stats>",level);
 
-    node->child1 = stat(filename,tk,level,s);
-    node->child2 = mStat(filename,tk,level,s);
+    node->child1 = stat(filename,tk,level,s,scope);
+    node->child2 = mStat(filename,tk,level,s,scope);
     return node;
 }
 
 /* <mStats> */
-node_t *mStat(char *filename, tlk *tk, int level, Stack *s) {
+node_t *mStat(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
     node_t *node = getNode("<mStat>",level);
 
     //prediction ??
     if (tk->tk_Id == Scan_Tk || tk->tk_Id == Prnt_Tk || tk->tk_Id == Bgn_Tk || tk->tk_Id == LftBracket_Tk || tk->tk_Id == Loop_Tk || tk->tk_Id == Identifier_Tk) {
         //don't consume the token yet'
-        node->child1 = stat(filename,tk,level,s);
-        node->child2 = mStat(filename,tk,level,s);
+        node->child1 = stat(filename,tk,level,s,scope);
+        node->child2 = mStat(filename,tk,level,s,scope);
         return node;
     }
     else
@@ -335,7 +344,7 @@ node_t *mStat(char *filename, tlk *tk, int level, Stack *s) {
 }
 
 /* <stat> */
-node_t *stat(char *filename, tlk *tk, int level, Stack *s) {
+node_t *stat(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
     node_t *node = getNode("<stat>",level);
 
@@ -351,15 +360,15 @@ node_t *stat(char *filename, tlk *tk, int level, Stack *s) {
     else if (tk->tk_Id == Bgn_Tk) {
         int *varCount = (int *)malloc(sizeof(int));
         *varCount = 0;
-        node->child1 = block(filename,tk,level,s);
+        node->child1 = block(filename,tk,level,s,scope);
         return node;
     }
     else if (tk->tk_Id == LftBracket_Tk) {
-        node->child1 = if_(filename,tk,level,s);
+        node->child1 = if_(filename,tk,level,s,scope);
         return node;
     }
     else if (tk->tk_Id == Loop_Tk) {
-        node->child1 = loop(filename,tk,level,s);
+        node->child1 = loop(filename,tk,level,s,scope);
         return node;
     }
     else if (tk->tk_Id == Identifier_Tk) {
@@ -436,7 +445,7 @@ node_t *out(char *filename, tlk *tk, int level) {
 }
 
 /* <if> */
-node_t *if_(char *filename, tlk *tk, int level, Stack *s) {
+node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
     node_t *node = getNode("<if>",level);
 
@@ -451,7 +460,7 @@ node_t *if_(char *filename, tlk *tk, int level, Stack *s) {
                 int *varCount = (int *)malloc(sizeof(int));
                 *varCount = 0;
                 scanner(filename,tk);
-                node->child4 = block(filename,tk,level,s);
+                node->child4 = block(filename,tk,level,s,scope);
                 return node;
             }
             else
@@ -465,7 +474,7 @@ node_t *if_(char *filename, tlk *tk, int level, Stack *s) {
 }
 
 /* <loop> */
-node_t *loop(char *filename, tlk *tk, int level, Stack *s) {
+node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
     node_t *node = getNode("<loop>",level);
 
@@ -478,7 +487,7 @@ node_t *loop(char *filename, tlk *tk, int level, Stack *s) {
             node->child3 = expr(filename,tk,level);
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
-                node->child4 = block(filename,tk,level,s);
+                node->child4 = block(filename,tk,level,s,scope);
                 return node;
             }
             else

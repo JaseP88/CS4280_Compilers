@@ -1,6 +1,18 @@
 Var disco::dog
 Begin
-	Var meep::a::b::c::kukoo::meep
+	Var meep::dog::a::b::c::kukoo
+	Begin
+		Var moop::vim::vic
+		Print[2].
+	End
+	Begin 
+		Var vape::yu::kukoo::moop
+		Loop[5<2]
+			Begin
+				Var nerp::nope::nip::yu
+				Scan:nip.
+			End
+	End
 	[5<2]Iff
 		Begin
 			Var a::b::dog::meow::cat

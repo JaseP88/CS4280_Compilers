@@ -17,7 +17,7 @@ void push(char *var, Stack *s) {
     else {
         s->size++;
         s->variable[s->size] = var;
-        printf("+++pushing: %s\n",s->variable[s->size]);
+        printf("\t+++pushing: %s\n",s->variable[s->size]);
     }
 }
 
@@ -27,7 +27,7 @@ void pop(Stack *s) {
         exit(1);
     }
     else {
-        printf("\t---popping: %s\n",top(s));
+        printf("\t\t---popping: %s\n",top(s));
         s->size--;
     }
 }
