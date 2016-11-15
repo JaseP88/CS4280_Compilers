@@ -1,0 +1,10 @@
+Var disco::dog
+Begin
+	Var meep::a::b::c::kukoo::meep
+	[5<2]Iff
+		Begin
+			Var a::b::dog::meow::cat
+			Scan:c.
+		End
+	Scan:c.
+End

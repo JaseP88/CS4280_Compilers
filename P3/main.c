@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "testscanner.h"
 #include "parser.h"
 #include "scanner.h"
 #include "treePrint.h"
