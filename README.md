@@ -22,7 +22,7 @@ Delimiters:
 
 Comments: starts with @ ends with a WS
 
--The BNF-
+-The BNF-  
 
 [program] -> [vars][block]
 block -> Begin varsstats End
