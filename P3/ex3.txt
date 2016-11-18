@@ -4,6 +4,15 @@ Begin
 	Begin
 		Var moop::vim::vic
 		Print[2].
+		Begin
+			Var hey::hi
+			Scan:hey.
+			[5>0]Iff
+				Begin
+					Var this::is::if::statement::hi
+					Scan:yo.
+				End
+		End
 	End
 	Begin 
 		Var vape::yu::kukoo::moop

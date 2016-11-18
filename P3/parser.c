@@ -42,8 +42,9 @@ node_t *program(char *filename, tlk *tk) {
     Stack *stack = (Stack *)malloc(sizeof(Stack));
     initStack(stack);
     
-    printf("Global Scope\n");
-    node->child1 =  vars(filename,tk,level,varCount,stack);   
+    printf("%*cGlobal Vars:\n",1,' ');
+    node->child1 =  vars(filename,tk,level,varCount,stack,scope); 
+    printf("%*cLocal Vars\n",3,' ');  
     node->child2  = block(filename,tk,level,stack,scope);
     
 /* Maybe no need to pop global scopes???   
@@ -66,15 +67,14 @@ node_t *block(char *filename, tlk *tk, int level, Stack *s, int scope) {
     int *varCount = (int *)malloc(sizeof(int)); //create the varCount for each block scope
     *varCount = 0;  //init set the varCount to 0
 
-    printf("Scope Level %d:\n",scope);
+    
     if (tk->tk_Id == Bgn_Tk) {  //structural token no need to store
         scanner(filename,tk);   //consume the token and get new token
         
-        node->child1 = vars(filename,tk,level,varCount,s);
+        node->child1 = vars(filename,tk,level,varCount,s,scope);
         node->child2 = stats(filename,tk,level,s,scope);
    
         if (tk->tk_Id == End_Tk) {
-            printf("\n\tScope Level %d End\n",scope);
             //pop the instance of each block when done
             for (i=0; i<*varCount; i++) 
                 pop(s);
@@ -90,7 +90,7 @@ node_t *block(char *filename, tlk *tk, int level, Stack *s, int scope) {
 }
 
 /* <vars> */
-node_t *vars(char *filename, tlk *tk, int level, int *varcount, Stack *s) {
+node_t *vars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int scope) {
     level++;
     tlk temp;
     char *tempname;
@@ -107,14 +107,17 @@ node_t *vars(char *filename, tlk *tk, int level, int *varcount, Stack *s) {
             node->tok = temp;
             
             tempname = tk->tk_inst;
+            tempname+=5;
             strcpy(node->instance,tempname);
             
             //originally varcount is 0 in all vars()
             push(node->instance,s);
             *varcount+=1;   //increment the varcount for this identifier
+            printf("%*c%s, ", scope*3, ' ', top(s));
             
             scanner(filename,tk);
-            node->child1 = mvars(filename,tk,level,varcount,s);   //pass the varcount to mvars
+            node->child1 = mvars(filename,tk,level,varcount,s,scope);   //pass the varcount to mvars
+            printf("\n\n");
             return node;
         }
         else
@@ -125,7 +128,7 @@ node_t *vars(char *filename, tlk *tk, int level, int *varcount, Stack *s) {
 }
 
 /* <mvars> */
-node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s) {
+node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int scope) {
     level++;
     tlk temp;
     char *tempname;
@@ -143,6 +146,7 @@ node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s) {
                 temp = *tk;
                 node->tok = temp;
                 tempname = tk->tk_inst;
+                tempname+=5;
                 strcpy(node->instance,tempname);
 
                 //push identifier into stack 
@@ -151,15 +155,16 @@ node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s) {
                     if (number == -1 || number >= *varcount) {
                         push(node->instance,s);
                         *varcount+=1;
+                        printf("%s, ", top(s));
                     }
                     else if (number < *varcount) {
-                        printf("ERROR: multiple identifier %s in same scope line %d\n",node->instance,temp.line);
+                        printf("\nERROR: multiple identifiers. %s already in scope, line %d\n",node->instance,temp.line);
                         exit(1);
                     }
                 }
                 
                 scanner(filename,tk);
-                node->child1 = mvars(filename,tk,level,varcount,s);
+                node->child1 = mvars(filename,tk,level,varcount,s,scope);
                 return node;
             }
             else
@@ -360,7 +365,8 @@ node_t *stat(char *filename, tlk *tk, int level, Stack *s, int scope) {
     else if (tk->tk_Id == Bgn_Tk) {
         int *varCount = (int *)malloc(sizeof(int));
         *varCount = 0;
-        node->child1 = block(filename,tk,level,s,scope);
+        printf("%*cLocal Vars\n",(scope+1)*3,' ');  
+        node->child1 = block(filename,tk,level,s,scope); 
         return node;
     }
     else if (tk->tk_Id == LftBracket_Tk) {
@@ -460,6 +466,7 @@ node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
                 int *varCount = (int *)malloc(sizeof(int));
                 *varCount = 0;
                 scanner(filename,tk);
+                printf("%*cIff Scope:\n",(scope+1)*3,' ');
                 node->child4 = block(filename,tk,level,s,scope);
                 return node;
             }
@@ -487,6 +494,7 @@ node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
             node->child3 = expr(filename,tk,level);
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
+                 printf("%*cLoop Scope:\n",(scope+1)*3,' ');
                 node->child4 = block(filename,tk,level,s,scope);
                 return node;
             }

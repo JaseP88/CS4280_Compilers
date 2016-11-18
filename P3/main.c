@@ -25,7 +25,7 @@ int main (int argc, char *argv[]) {
 		char *extension = ".txt";	//change to fsf
 		char *extension2 = ".fs16";
 		strcpy(file, filename);
-		strcat(file,extension);
+		strcat(file,extension2);
 		//testScanner(file);
 		parser(file);
 		//testScan(file);

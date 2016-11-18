@@ -8,8 +8,8 @@
 void parser(char *filename);  //auxillary function
 node_t *program(char *filename, tlk *tk);
 node_t *block(char *filename, tlk *tk, int level, Stack *s, int scope);
-node_t *vars(char *filename, tlk *tk, int level, int *valcount, Stack *s);
-node_t *mvars(char *filename, tlk *tk, int level, int *valcount, Stack *s);
+node_t *vars(char *filename, tlk *tk, int level, int *valcount, Stack *s, int scope);
+node_t *mvars(char *filename, tlk *tk, int level, int *valcount, Stack *s, int scope);
 
 
 node_t *expr(char *filename, tlk *tk, int level);
