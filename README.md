@@ -29,7 +29,10 @@ Comments: starts with @ ends with a WS
 -The BNF-
 
 [program] -> [vars][block]
-block -> Begin varsstats End
+
+block -> Begin [vars][stats] End
+
+
 
 
 
