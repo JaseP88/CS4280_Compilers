@@ -30,9 +30,46 @@ Comments: starts with @ ends with a WS
 
 < program > -> < vars > < block >
 
-*program -> *vars *block
+< block > -> Begin < vars > < stats > End
 
-*block -> Begin *vars *stats End
+< vars > -> Var Identifier < mvars > | E 
+
+< mvars > -> ::Identifier < mvars > | E 
+
+< expr > -> < M > < rpxe >
+
+< rpxe > -> + < expr > | E
+
+< M > -> < T > < N >
+
+< N > -> - < M > | E
+
+< T > -> < F > < X >
+
+< X > -> * < T > | / < T > | E
+
+< F > -> - < F > | < R >
+
+< R > -> [ < expr > ] | Identifier | Number
+
+< stats > -> < stat > < mStat >
+
+< mStat > -> < stat > < mStat > | E
+
+< stat > -> < in > | < out > | < block > | < if > | < loop > | < assign >
+
+< in > -> Scan : Identifier .
+
+< out > -> Print [ < expr > ] .
+
+< if > -> [ < expr > < RO > < expr > ] Iff < block >
+
+< loop > -> Loop [ < expr > < RO > < expr > ] < block >
+
+< assign > -> Identifer = = < expr > .
+
+< RO > -> >=> | <=< | = | > | < | =!=
+
 
 
 
