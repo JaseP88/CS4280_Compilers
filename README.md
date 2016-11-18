@@ -4,11 +4,12 @@ Compilers Projects
 -The Language-
 
 Identifiers: begin with letter, is alpha numeric
+
 Integers: any sequence of decimal digits
 
 Keywords:
 
-	Begin End Start Stop Iff Looop
+	Begin End Start Stop Iff Loop
 	Void Var Int Call Return Scan
 	Print Program
 
@@ -34,7 +35,7 @@ Comments: starts with @ ends with a WS
 
 < vars > -> Var Identifier < mvars > | E 
 
-< mvars > -> ::Identifier < mvars > | E 
+< mvars > -> : : Identifier < mvars > | E 
 
 < expr > -> < M > < rpxe >
 
