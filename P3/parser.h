@@ -12,24 +12,24 @@ node_t *vars(char *filename, tlk *tk, int level, int *valcount, Stack *s, int sc
 node_t *mvars(char *filename, tlk *tk, int level, int *valcount, Stack *s, int scope);
 
 
-node_t *expr(char *filename, tlk *tk, int level);
-node_t *rpxe(char *filename, tlk *tk, int level); //added to grammar
-node_t *M(char *filename, tlk *tk, int level);
-node_t *N(char *filename, tlk *tk, int level);    //added to grammar
-node_t *T(char *filename, tlk *tk, int level);
-node_t *X(char *filename, tlk *tk, int level);    //added to grammar
-node_t *F(char *filename, tlk *tk, int level);
-node_t *R(char *filename, tlk *tk, int level);
+node_t *expr(char *filename, tlk *tk, int level, Stack *s);
+node_t *rpxe(char *filename, tlk *tk, int level, Stack *s); //added to grammar
+node_t *M(char *filename, tlk *tk, int level, Stack *s);
+node_t *N(char *filename, tlk *tk, int level, Stack *s);    //added to grammar
+node_t *T(char *filename, tlk *tk, int level, Stack *s);
+node_t *X(char *filename, tlk *tk, int level, Stack *s);    //added to grammar
+node_t *F(char *filename, tlk *tk, int level, Stack *s);
+node_t *R(char *filename, tlk *tk, int level, Stack *s);
 
 
 node_t *stats(char *filename, tlk *tk, int level,Stack *s, int scope);
 node_t *mStat(char *filename, tlk *tk, int level, Stack *s, int scope);
 node_t *stat(char *filename, tlk *tk, int level, Stack *s, int scope);
-node_t *in(char *filename, tlk *tk, int level);
-node_t *out(char *filename, tlk *tk, int level);
+node_t *in(char *filename, tlk *tk, int level, Stack *s);
+node_t *out(char *filename, tlk *tk, int level, Stack *s);
 node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope);
 node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope);
-node_t *assign(char *filename, tlk *tk, int level);
+node_t *assign(char *filename, tlk *tk, int level, Stack *s);
 
 
 node_t *RO(char *filename, tlk *tk, int level);

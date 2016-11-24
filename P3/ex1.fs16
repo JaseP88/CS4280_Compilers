@@ -1,0 +1,5 @@
+Var a::b::c
+Begin
+	Var a::g::z
+	Print[z].
+End

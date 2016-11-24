@@ -178,17 +178,17 @@ node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int s
 }
 
 /* <expr> */
-node_t *expr(char *filename, tlk *tk, int level) {
+node_t *expr(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     node_t *node = getNode("<expr>",level);
 
-    node->child1 = M(filename,tk,level);
-    node->child2 = rpxe(filename,tk,level);
+    node->child1 = M(filename,tk,level,s);
+    node->child2 = rpxe(filename,tk,level,s);
     return node;
 }
 
 /* <rpxe> backwards HAH */
-node_t *rpxe(char *filename, tlk *tk, int level) {
+node_t *rpxe(char *filename, tlk *tk, int level, Stack *s) {
     tlk temp;
     level++;
     node_t *node = getNode("<rpxe>",level);
@@ -197,7 +197,7 @@ node_t *rpxe(char *filename, tlk *tk, int level) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
-        node->child1 = expr(filename,tk,level);
+        node->child1 = expr(filename,tk,level,s);
         return node;
     }
     
@@ -205,17 +205,17 @@ node_t *rpxe(char *filename, tlk *tk, int level) {
 }
 
 /* <M> */
-node_t *M(char *filename, tlk *tk, int level) {
+node_t *M(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     node_t *node = getNode("<M>",level);
 
-    node->child1 = T(filename,tk,level);
-    node->child2 = N(filename,tk,level);
+    node->child1 = T(filename,tk,level,s);
+    node->child2 = N(filename,tk,level,s);
     return node;
 }
 
 /* <N> */
-node_t *N(char *filename, tlk *tk, int level) {
+node_t *N(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     tlk temp;
     node_t *node = getNode("<N>",level);
@@ -224,7 +224,7 @@ node_t *N(char *filename, tlk *tk, int level) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
-        node->child1 = M(filename,tk,level);
+        node->child1 = M(filename,tk,level,s);
         return node;
     }
     
@@ -232,16 +232,16 @@ node_t *N(char *filename, tlk *tk, int level) {
 }
 
 /* <T> */
-node_t *T(char *filename, tlk *tk, int level) {
+node_t *T(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     node_t *node = getNode("<T>",level);
-    node->child1 = F(filename,tk,level);
-    node->child2 = X(filename,tk,level);
+    node->child1 = F(filename,tk,level,s);
+    node->child2 = X(filename,tk,level,s);
     return node;
 }
 
 /* <X> */ 
-node_t *X(char *filename, tlk *tk, int level) {
+node_t *X(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     tlk temp;
     node_t *node = getNode("<X>",level);
@@ -250,14 +250,14 @@ node_t *X(char *filename, tlk *tk, int level) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
-        node->child1 = T(filename,tk,level);
+        node->child1 = T(filename,tk,level,s);
         return node;
     }
     else if (tk->tk_Id == BkSlash_Tk) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
-        node->child1 = T(filename,tk,level);
+        node->child1 = T(filename,tk,level,s);
         return node;
     }
      
@@ -265,7 +265,7 @@ node_t *X(char *filename, tlk *tk, int level) {
 }
 
 /* <F> */
-node_t *F(char *filename, tlk *tk, int level) {
+node_t *F(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     tlk temp;
     node_t *node = getNode("<F>",level);
@@ -274,17 +274,17 @@ node_t *F(char *filename, tlk *tk, int level) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
-        node->child1 = F(filename,tk,level);
+        node->child1 = F(filename,tk,level,s);
         return node;
     }
     else 
-        node->child1 = R(filename,tk,level);
+        node->child1 = R(filename,tk,level,s);
 
     return node;
 }
 
 /* <R> */
-node_t *R(char *filename, tlk *tk, int level) {
+node_t *R(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     tlk temp;
     char *tempname;
@@ -293,7 +293,7 @@ node_t *R(char *filename, tlk *tk, int level) {
 
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
-        node->child1 = expr(filename,tk,level);
+        node->child1 = expr(filename,tk,level,s);
      
         if (tk->tk_Id == RgtBracket_Tk) {
             scanner(filename,tk);
@@ -303,10 +303,19 @@ node_t *R(char *filename, tlk *tk, int level) {
             errCond("R","]",tk->tk_inst,tk->line);
     }
     else if (tk->tk_Id == Identifier_Tk) {
+        int num;
         temp = *tk;
         node->tok = temp;
         tempname = tk->tk_inst;
+        tempname+=5;
         strcpy(node->instance,tempname);
+
+        num = find(node->instance,s);
+        if (num == -1) {
+            printf("ERROR: var %s not found in scope, Line%d\n",node->instance,node->tok.line);
+            exit (1);
+        }
+
         scanner(filename,tk);
         return node;
     }
@@ -355,11 +364,11 @@ node_t *stat(char *filename, tlk *tk, int level, Stack *s, int scope) {
 
     if (tk->tk_Id == Scan_Tk) {
         //dont consume token yet
-        node->child1 = in(filename,tk,level);
+        node->child1 = in(filename,tk,level,s);
         return node;
     }
     else if (tk->tk_Id == Prnt_Tk) {
-        node->child1 = out(filename,tk,level);
+        node->child1 = out(filename,tk,level,s);
         return node;
     }
     else if (tk->tk_Id == Bgn_Tk) {
@@ -378,7 +387,7 @@ node_t *stat(char *filename, tlk *tk, int level, Stack *s, int scope) {
         return node;
     }
     else if (tk->tk_Id == Identifier_Tk) {
-        node->child1 = assign(filename,tk,level);
+        node->child1 = assign(filename,tk,level,s);
         return node;
     }
     else {
@@ -388,7 +397,7 @@ node_t *stat(char *filename, tlk *tk, int level, Stack *s, int scope) {
 }
 
 /* <in> */
-node_t *in(char *filename, tlk *tk, int level) {
+node_t *in(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     tlk temp;
     char *tempname;
@@ -400,10 +409,19 @@ node_t *in(char *filename, tlk *tk, int level) {
         if (tk->tk_Id == Cln_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Identifier_Tk) {
+                int num;
                 temp = *tk;
                 node->tok = temp;
                 tempname = tk->tk_inst;
+                tempname+=5;
                 strcpy(node->instance,tempname);
+
+                num = find(node->instance,s);
+                if (num == -1) {
+                    printf("ERROR: var %s not found in scope, Line:%d\n",node->instance,node->tok.line);
+                    exit(1);
+                }
+
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
                     scanner(filename,tk);
@@ -423,14 +441,14 @@ node_t *in(char *filename, tlk *tk, int level) {
 }
 
 /* <out> */
-node_t *out(char *filename, tlk *tk, int level) {
+node_t *out(char *filename, tlk *tk, int level, Stack *s) {
     node_t *node = getNode("<out>",level);
 
     if (tk->tk_Id == Prnt_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
-            node->child1 = expr(filename,tk,level);
+            node->child1 = expr(filename,tk,level,s);
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
@@ -457,9 +475,9 @@ node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
 
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
-        node->child1 = expr(filename,tk,level);
+        node->child1 = expr(filename,tk,level,s);
         node->child2 = RO(filename,tk,level);
-        node->child3 = expr(filename,tk,level);
+        node->child3 = expr(filename,tk,level,s);
         if (tk->tk_Id == RgtBracket_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Iff_Tk) {
@@ -489,9 +507,9 @@ node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
-            node->child1 = expr(filename,tk,level);
+            node->child1 = expr(filename,tk,level,s);
             node->child2 = RO(filename,tk,level);
-            node->child3 = expr(filename,tk,level);
+            node->child3 = expr(filename,tk,level,s);
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
                  printf("%*cLoop Scope:\n",(scope+1)*3,' ');
@@ -509,7 +527,7 @@ node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
 }
 
 /* <assign> */
-node_t *assign(char *filename, tlk *tk, int level) {
+node_t *assign(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     tlk temp;
     tlk temp2;
@@ -518,16 +536,24 @@ node_t *assign(char *filename, tlk *tk, int level) {
     node->instance = (char *)malloc(24);
 
     if (tk->tk_Id == Identifier_Tk) {
+        int num;
         temp = *tk;
         node->tok = temp;
         tempname = tk->tk_inst;
+        tempname+=5;
         strcpy(node->instance,tempname);
+
+        if (find(node->instance,s) == -1) {
+            printf("ERROR: var %s not found in scope, Line%d\n",node->instance,node->tok.line);
+            exit (1);
+        }
+
         scanner(filename,tk);
         if (tk->tk_Id == DblEq_Tk) {
             temp2 = *tk;
             node->tok2 = temp2;  //the only nonterminal with 2 semantic tokens
             scanner(filename,tk);
-            node->child1 = expr(filename,tk,level);
+            node->child1 = expr(filename,tk,level,s);
             if (tk->tk_Id == Period_Tk) {
                 scanner(filename,tk);
                 return node;

@@ -1,21 +1,22 @@
-Var disco::dog
+Var disco::dog::maws
 Begin
 	Var meep::dog::a::b::c::kukoo
 	Begin
 		Var moop::vim::vic
 		Print[2].
 		Begin
-			Var hey::hi
+			Var hey::hi::paws
 			Scan:hey.
 			[5>0]Iff
 				Begin
 					Var this::is::if::statement::hi
+					maws == paws.
 					Scan:yo.
 				End
 		End
 	End
 	Begin 
-		Var vape::yu::kukoo::moop
+		Var vape::yu::kukoo::moop::yo
 		Loop[5<2]
 			Begin
 				Var nerp::nope::nip::yu
@@ -26,6 +27,7 @@ Begin
 		Begin
 			Var a::b::dog::meow::cat
 			Scan:c.
+			Print[meh].
 		End
 	Scan:c.
 End
