@@ -1,0 +1,97 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/shm.h>
+
+#include "stack.h"
+#define stackmax 100 
+
+/*
+Stack *semanticStack;
+
+void initSemStack () {
+    int key = 100;
+    int shmID;
+    Stack *semstack;
+
+    shmID = shmget(key,sizeof(Stack),IPC_CREAT | 0666);
+    if (shmID<0) {
+        perror("shmget failed");
+        exit(1);
+    }
+
+    semstack = (Stack *)shmat(shmID,(void *)0,0);
+    if (semstack<(Stack *)(0)) {
+        perror("shmat failed");
+        exit(1);
+    }
+
+    semanticStack = semstack;
+}
+
+void removeSemStack() {
+    if(shmctl(shmID,IPC_RMID,NULL) == -1) {
+        perror("failed to remove shared memory");
+        exit(1);
+    }
+}
+*/
+
+void initStack(Stack *s) {
+    s->size = -1;
+}
+
+void push(char *var, Stack *s) {
+    if (s->size > stackmax-1) {
+        printf("ERROR: stack is full cannot push\n");
+        exit(1);
+    }
+    else {
+        s->size++;
+        s->variable[s->size] = var;
+        //printf("\t+++pushing: %s\n",top(s));
+    }
+}
+
+void pop(Stack *s) {
+    if (s->size == - 1) {
+        printf("ERROR: stack is empty cannot pop\n");
+        exit(1);
+    }
+    else {
+        //printf("\t\t---popping: %s\n",top(s));
+        s->size--;
+    }
+}
+
+char *top(Stack *s) {
+    if (s->size == -1) {
+        printf("ERROR: stack is empty no top stack element\n");
+        exit(1);
+    }
+   return s->variable[s->size];
+}
+
+int find(char *var, Stack *s) {
+    int distance = 0;
+    int top_size = s->size;
+
+    while (top_size > -1) {
+        if (strcmp(var, s->variable[top_size]) != 0) {  //if var and the top stack is not same add distance and reduce the top size(pop)
+            distance++;
+            top_size--;
+        }
+        else {
+            //printf("!!!!!FOUND at distance %d from stack\n",distance);
+            return distance;
+        } 
+    }
+    return -1;  //return -1 if didnt find
+}
+
+//bad function
+void printstack(Stack *s) {
+    int i;
+    for (i=0; i<s->size; i++)
+        printf("%s\n",s->variable[s->size]);
+}

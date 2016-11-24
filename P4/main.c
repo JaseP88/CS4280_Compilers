@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "parser.h"
+#include "scanner.h"
+#include "treePrint.h"
+#include "codegen.h"
+
+#define filenameSize 50
+
+
+int main (int argc, char *argv[]) {
+
+	/* if more than two argument error */
+	if (argc > 2) {
+		printf ("too many arguments\n");
+	}
+
+
+	/* if file is provided in argument */
+	else if (argc == 2) {
+
+		char file[filenameSize];
+		char *filename = argv[1];
+		char *extension = ".txt";	//change to fsf
+		char *extension2 = ".fs16";
+		strcpy(file, filename);
+		strcat(file,extension2);
+		//testScanner(file);
+		parser(file);
+		
+		//test();
+		//testpop();
+
+		//testScan(file);
+	}	
+
+	/* read from keyboard */
+	else 
+		//testScan2();
+	
+
+	return 0;
+}

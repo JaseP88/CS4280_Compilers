@@ -1,0 +1,9 @@
+Var milk::man
+Begin
+	Var x
+	x ==11.
+	[x>10] Iff
+		Begin
+			Print[1].
+		End
+End
