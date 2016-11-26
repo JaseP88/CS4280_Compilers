@@ -1,0 +1,27 @@
+Var x :: y
+@comment Begin   
+                 
+
+@comment               
+     
+
+	Scan : x.
+	y
+
+==
+						x
+		.
+            
+         
+         
+	Print                 [y-x       ]  .
+End
+
+
+
+
+
+
+
+
+

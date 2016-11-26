@@ -1,41 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/shm.h>
 
 #include "stack.h"
 #define stackmax 100 
-
-/*
-Stack *semanticStack;
-
-void initSemStack () {
-    int key = 100;
-    int shmID;
-    Stack *semstack;
-
-    shmID = shmget(key,sizeof(Stack),IPC_CREAT | 0666);
-    if (shmID<0) {
-        perror("shmget failed");
-        exit(1);
-    }
-
-    semstack = (Stack *)shmat(shmID,(void *)0,0);
-    if (semstack<(Stack *)(0)) {
-        perror("shmat failed");
-        exit(1);
-    }
-
-    semanticStack = semstack;
-}
-
-void removeSemStack() {
-    if(shmctl(shmID,IPC_RMID,NULL) == -1) {
-        perror("failed to remove shared memory");
-        exit(1);
-    }
-}
-*/
 
 void initStack(Stack *s) {
     s->size = -1;

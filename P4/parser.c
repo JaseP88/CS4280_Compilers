@@ -9,9 +9,9 @@
 #include "stack.h"
 #include "treePrint.h"
 #include "codegen.h"
-#include "genASM.h"
 
-Stack* sharedStack; //global stack to use in codegen.h
+char *asmfile = "target.asm";
+int maximumTemp = 0;
 
 /* auxillary function  <*/
 void parser(char *filename) {
@@ -27,8 +27,6 @@ void parser(char *filename) {
     else {
         printf("parser complete and is A-OK\n");
         //printTree(root);
-        //call codeGen() here
-        codeGen(root);
     }
 }
 
@@ -47,16 +45,12 @@ node_t *program(char *filename, tlk *tk) {
     Stack *stack = (Stack *)malloc(sizeof(Stack));
     initStack(stack);
     
-    //printf("%*cGlobal Vars:\n",1,' ');
+    
     node->child1 =  vars(filename,tk,level,varCount,stack,scope); 
-
-    //printf("%*cLocal Vars\n",3,' ');  
+ 
     node->child2  = block(filename,tk,level,stack,scope);
-
-    sharedStack = stack;
     
 /* Maybe no need to pop global scopes???   
-    printf("Global Scope End\n");
     //pop the global variables of fs16 language
     for (i=0; i<*varCount; i++) 
         pop(stack);
@@ -83,12 +77,11 @@ node_t *block(char *filename, tlk *tk, int level, Stack *s, int scope) {
         node->child2 = stats(filename,tk,level,s,scope);
    
         if (tk->tk_Id == End_Tk) {
-            /* no needt to pop when doing first pass
             //pop the instance of each block when done
-            for (i=0; i<*varCount; i++) 
+            for (i=0; i<*varCount; i++)  {
                 pop(s);
-            */
-
+                targetPop(asmfile);
+            }
             scanner(filename,tk);
             return node; 
         }
@@ -122,12 +115,14 @@ node_t *vars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int sc
             
             //originally varcount is 0 in all vars()
             push(node->instance,s);
+            targetPush(asmfile);
+
             *varcount+=1;   //increment the varcount for this identifier
-            //printf("%*c%s, ", scope*3, ' ', top(s));
+           
             
             scanner(filename,tk);
             node->child1 = mvars(filename,tk,level,varcount,s,scope);   //pass the varcount to mvars
-            //printf("\n\n");
+           
             return node;
         }
         else
@@ -164,12 +159,14 @@ node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int s
                     number = find(node->instance,s);  //find the identifier
                     if (number == -1 || number >= *varcount) {
                         push(node->instance,s);
+                        targetPush(asmfile);
+
                         *varcount+=1;
-                        //printf("%s, ", top(s));
+                        
                     }
                     else if (number < *varcount) {
                         printf("\nERROR: multiple identifiers. %s already in scope, line %d\n",node->instance,temp.line);
-                        exit(1);
+                        exitAndDel(asmfile);
                     }
                 }
                 
@@ -188,17 +185,17 @@ node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int s
 }
 
 /* <expr> */
-node_t *expr(char *filename, tlk *tk, int level) {
+node_t *expr(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     level++;
     node_t *node = getNode("<expr>",level);
 
-    node->child1 = M(filename,tk,level);
-    node->child2 = rpxe(filename,tk,level);
+    node->child1 = M(filename,tk,level,s,targtemp);
+    node->child2 = rpxe(filename,tk,level,s,targtemp);
     return node;
 }
 
 /* <rpxe> backwards HAH */
-node_t *rpxe(char *filename, tlk *tk, int level) {
+node_t *rpxe(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     tlk temp;
     level++;
     node_t *node = getNode("<rpxe>",level);
@@ -207,7 +204,19 @@ node_t *rpxe(char *filename, tlk *tk, int level) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
-        node->child1 = expr(filename,tk,level);
+        node->child1 = expr(filename,tk,level,s,targtemp);
+
+        char tempno[5];
+        int tempnum = *targtemp-1;
+
+        sprintf(tempno,"t%d",tempnum-1);
+        targetInstructAlpha(asmfile,"LOAD",tempno);
+        sprintf(tempno,"t%d",tempnum);
+        targetInstructAlpha(asmfile,"ADD",tempno);
+        sprintf(tempno,"t%d",tempnum-1);
+        targetInstructAlpha(asmfile,"STORE",tempno);
+        *targtemp-=1;
+
         return node;
     }
     
@@ -215,17 +224,17 @@ node_t *rpxe(char *filename, tlk *tk, int level) {
 }
 
 /* <M> */
-node_t *M(char *filename, tlk *tk, int level) {
+node_t *M(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     level++;
     node_t *node = getNode("<M>",level);
 
-    node->child1 = T(filename,tk,level);
-    node->child2 = N(filename,tk,level);
+    node->child1 = T(filename,tk,level,s,targtemp);
+    node->child2 = N(filename,tk,level,s,targtemp);
     return node;
 }
 
 /* <N> */
-node_t *N(char *filename, tlk *tk, int level) {
+node_t *N(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     level++;
     tlk temp;
     node_t *node = getNode("<N>",level);
@@ -234,7 +243,18 @@ node_t *N(char *filename, tlk *tk, int level) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
-        node->child1 = M(filename,tk,level);
+        node->child1 = M(filename,tk,level,s, targtemp);
+
+        char tempno[5];
+        int tempnum = *targtemp-1;
+
+        sprintf(tempno,"t%d",tempnum-1);
+        targetInstructAlpha(asmfile,"LOAD",tempno);
+        sprintf(tempno,"t%d",tempnum);
+        targetInstructAlpha(asmfile,"SUB",tempno);
+        sprintf(tempno,"t%d",tempnum-1);
+        targetInstructAlpha(asmfile,"STORE",tempno);
+
         return node;
     }
     
@@ -242,16 +262,16 @@ node_t *N(char *filename, tlk *tk, int level) {
 }
 
 /* <T> */
-node_t *T(char *filename, tlk *tk, int level) {
+node_t *T(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     level++;
     node_t *node = getNode("<T>",level);
-    node->child1 = F(filename,tk,level);
-    node->child2 = X(filename,tk,level);
+    node->child1 = F(filename,tk,level,s,targtemp);
+    node->child2 = X(filename,tk,level,s,targtemp);
     return node;
 }
 
 /* <X> */ 
-node_t *X(char *filename, tlk *tk, int level) {
+node_t *X(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     level++;
     tlk temp;
     node_t *node = getNode("<X>",level);
@@ -259,15 +279,39 @@ node_t *X(char *filename, tlk *tk, int level) {
     if (tk->tk_Id == Ast_Tk) {
         temp = *tk;
         node->tok = temp;
+
         scanner(filename,tk);
-        node->child1 = T(filename,tk,level);
+        node->child1 = T(filename,tk,level,s,targtemp);
+
+        char tempno[5];
+        int tempnum = *targtemp-1;
+        
+        sprintf(tempno,"t%d",tempnum-1);
+        targetInstructAlpha(asmfile,"LOAD",tempno);
+        sprintf(tempno,"t%d",tempnum);
+        targetInstructAlpha(asmfile,"MULT",tempno);
+        sprintf(tempno,"t%d",tempnum-1);
+        targetInstructAlpha(asmfile,"STORE",tempno);
+        *targtemp-=1;
+
         return node;
     }
     else if (tk->tk_Id == BkSlash_Tk) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
-        node->child1 = T(filename,tk,level);
+        node->child1 = T(filename,tk,level,s,targtemp);
+
+        char tempno[5];
+        int tempnum = *targtemp-1;
+        
+        sprintf(tempno,"t%d",tempnum-1);
+        targetInstructAlpha(asmfile,"LOAD",tempno);
+        sprintf(tempno,"t%d",tempnum);
+        targetInstructAlpha(asmfile,"DIV",tempno);
+        sprintf(tempno,"t%d",tempnum-1);
+        targetInstructAlpha(asmfile,"STORE",tempno);
+
         return node;
     }
      
@@ -275,7 +319,7 @@ node_t *X(char *filename, tlk *tk, int level) {
 }
 
 /* <F> */
-node_t *F(char *filename, tlk *tk, int level) {
+node_t *F(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     level++;
     tlk temp;
     node_t *node = getNode("<F>",level);
@@ -284,17 +328,32 @@ node_t *F(char *filename, tlk *tk, int level) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
-        node->child1 = F(filename,tk,level);
+        node->child1 = F(filename,tk,level,s,targtemp);
+
+        char tempno[5];
+        int tempnum = *targtemp-1;
+        sprintf(tempno,"t%d",tempnum);
+        targetInstructAlpha(asmfile,"LOAD",tempno);
+        targetInstructAlpha(asmfile,"MULT","2");
+        sprintf(tempno,"t%d",tempnum+1);
+        targetInstructAlpha(asmfile,"STORE",tempno);
+        sprintf(tempno,"t%d",tempnum);
+        targetInstructAlpha(asmfile,"LOAD",tempno);
+        sprintf(tempno,"t%d",tempnum+1);
+        targetInstructAlpha(asmfile,"SUB",tempno);
+        sprintf(tempno,"t%d",tempnum);
+        targetInstructAlpha(asmfile,"STORE",tempno);
+
         return node;
     }
     else 
-        node->child1 = R(filename,tk,level);
+        node->child1 = R(filename,tk,level,s,targtemp);
 
     return node;
 }
 
 /* <R> */
-node_t *R(char *filename, tlk *tk, int level) {
+node_t *R(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     level++;
     tlk temp;
     char *tempname;
@@ -303,7 +362,7 @@ node_t *R(char *filename, tlk *tk, int level) {
 
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
-        node->child1 = expr(filename,tk,level);
+        node->child1 = expr(filename,tk,level,s,targtemp);
      
         if (tk->tk_Id == RgtBracket_Tk) {
             scanner(filename,tk);
@@ -313,18 +372,37 @@ node_t *R(char *filename, tlk *tk, int level) {
             errCond("R","]",tk->tk_inst,tk->line);
     }
     else if (tk->tk_Id == Identifier_Tk) {
+        int num;
         temp = *tk;
         node->tok = temp;
         tempname = tk->tk_inst;
+        tempname+=5;
         strcpy(node->instance,tempname);
+
+        num = find(node->instance,s);
+        if (num == -1) {
+            printf("ERROR: var %s not found in scope, Line%d\n",node->instance,node->tok.line);
+            exitAndDel(asmfile);
+        }
+
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == IntLiteral_Tk) {
+        char tempno[5]; 
+        int tempnum = *targtemp;
+        sprintf(tempno,"t%d",tempnum);
+
         temp = *tk;
         node->tok = temp;
         tempname = tk->tk_inst;
+        tempname+=4;
         strcpy(node->instance,tempname);
+
+        targetInstructAlpha(asmfile, "LOAD", node->instance);
+        targetInstructAlpha(asmfile, "STORE", tempno);
+        *targtemp+=1;
+
         scanner(filename,tk);
         return node;
     }
@@ -365,17 +443,17 @@ node_t *stat(char *filename, tlk *tk, int level, Stack *s, int scope) {
 
     if (tk->tk_Id == Scan_Tk) {
         //dont consume token yet
-        node->child1 = in(filename,tk,level);
+        node->child1 = in(filename,tk,level,s);
         return node;
     }
     else if (tk->tk_Id == Prnt_Tk) {
-        node->child1 = out(filename,tk,level);
+        node->child1 = out(filename,tk,level,s);
         return node;
     }
     else if (tk->tk_Id == Bgn_Tk) {
         int *varCount = (int *)malloc(sizeof(int));
         *varCount = 0;
-        //printf("%*cLocal Vars\n",(scope+1)*3,' ');  
+       
         node->child1 = block(filename,tk,level,s,scope); 
         return node;
     }
@@ -388,17 +466,17 @@ node_t *stat(char *filename, tlk *tk, int level, Stack *s, int scope) {
         return node;
     }
     else if (tk->tk_Id == Identifier_Tk) {
-        node->child1 = assign(filename,tk,level);
+        node->child1 = assign(filename,tk,level,s);
         return node;
     }
     else {
         printf("ERROR: <stat> expected tokens: Scan OR ID OR Loop OR Begin OR Print OR ( [ ) line:%d\n",tk->line);
-        exit(1);
+        exitAndDel(asmfile);
     }
 }
 
 /* <in> */
-node_t *in(char *filename, tlk *tk, int level) {
+node_t *in(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     tlk temp;
     char *tempname;
@@ -410,10 +488,19 @@ node_t *in(char *filename, tlk *tk, int level) {
         if (tk->tk_Id == Cln_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Identifier_Tk) {
+                int num;
                 temp = *tk;
                 node->tok = temp;
                 tempname = tk->tk_inst;
+                tempname+=5;
                 strcpy(node->instance,tempname);
+
+                num = find(node->instance,s);
+                if (num == -1) {
+                    printf("ERROR: var %s not found in scope, Line:%d\n",node->instance,node->tok.line);
+                    exitAndDel(asmfile);
+                }
+
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
                     scanner(filename,tk);
@@ -433,14 +520,17 @@ node_t *in(char *filename, tlk *tk, int level) {
 }
 
 /* <out> */
-node_t *out(char *filename, tlk *tk, int level) {
+node_t *out(char *filename, tlk *tk, int level, Stack *s) {
     node_t *node = getNode("<out>",level);
+    int *targtemp = (int *)malloc(sizeof(int));
+    *targtemp = 1;
+
 
     if (tk->tk_Id == Prnt_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
-            node->child1 = expr(filename,tk,level);
+            node->child1 = expr(filename,tk,level,s, targtemp);
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
@@ -464,19 +554,22 @@ node_t *out(char *filename, tlk *tk, int level) {
 node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
     node_t *node = getNode("<if>",level);
+    int *targtemp = (int *)malloc(sizeof(int));
+    *targtemp = 0;
+
 
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
-        node->child1 = expr(filename,tk,level);
+        node->child1 = expr(filename,tk,level,s,targtemp);
         node->child2 = RO(filename,tk,level);
-        node->child3 = expr(filename,tk,level);
+        node->child3 = expr(filename,tk,level,s,targtemp);
         if (tk->tk_Id == RgtBracket_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Iff_Tk) {
                 int *varCount = (int *)malloc(sizeof(int));
                 *varCount = 0;
                 scanner(filename,tk);
-                //printf("%*cIff Scope:\n",(scope+1)*3,' ');
+                
                 node->child4 = block(filename,tk,level,s,scope);
                 return node;
             }
@@ -494,17 +587,19 @@ node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
 node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
     node_t *node = getNode("<loop>",level);
+    int *targtemp = (int *)malloc(sizeof(int));
+    *targtemp =0;
 
     if (tk->tk_Id == Loop_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
-            node->child1 = expr(filename,tk,level);
+            node->child1 = expr(filename,tk,level,s, targtemp);
             node->child2 = RO(filename,tk,level);
-            node->child3 = expr(filename,tk,level);
+            node->child3 = expr(filename,tk,level,s, targtemp);
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
-                //printf("%*cLoop Scope:\n",(scope+1)*3,' ');
+                 
                 node->child4 = block(filename,tk,level,s,scope);
                 return node;
             }
@@ -519,7 +614,7 @@ node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
 }
 
 /* <assign> */
-node_t *assign(char *filename, tlk *tk, int level) {
+node_t *assign(char *filename, tlk *tk, int level, Stack *s) {
     level++;
     tlk temp;
     tlk temp2;
@@ -528,16 +623,29 @@ node_t *assign(char *filename, tlk *tk, int level) {
     node->instance = (char *)malloc(24);
 
     if (tk->tk_Id == Identifier_Tk) {
+        int num;
         temp = *tk;
         node->tok = temp;
         tempname = tk->tk_inst;
+        tempname+=5;
         strcpy(node->instance,tempname);
+
+        if (find(node->instance,s) == -1) {
+            printf("ERROR: var %s not found in scope, Line%d\n",node->instance,node->tok.line);
+            exitAndDel(asmfile);
+        }
+
         scanner(filename,tk);
         if (tk->tk_Id == DblEq_Tk) {
             temp2 = *tk;
             node->tok2 = temp2;  //the only nonterminal with 2 semantic tokens
+            
             scanner(filename,tk);
-            node->child1 = expr(filename,tk,level);
+            
+            int *targtemp = (int *)malloc(sizeof(int));
+            *targtemp = 0;
+            node->child1 = expr(filename,tk,level,s,targtemp);
+            
             if (tk->tk_Id == Period_Tk) {
                 scanner(filename,tk);
                 return node;
@@ -601,5 +709,11 @@ node_t *RO(char *filename, tlk *tk, int level) {
 //          Error messaging, what nonterminal in BNF, the token expected before next token, and the line (approximation)
 void errCond(char *nonterm, char *token,char *beforeTk, int line) {
     printf("<%s> Error: expected %s token before %s line:%d\n",nonterm,token,beforeTk,line);
+    //exit(1);
+    exitAndDel(asmfile);
+}
+
+void exitAndDel(char *filename) {
+    remove(filename);
     exit(1);
 }

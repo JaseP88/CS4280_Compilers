@@ -1,0 +1,6 @@
+Var dog::y ::z ::a ::b
+Begin
+Var cat ::just
+Scan:thing.
+Print[5*-8].
+End

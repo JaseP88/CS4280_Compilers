@@ -5,7 +5,6 @@
 #include "parser.h"
 #include "scanner.h"
 #include "treePrint.h"
-#include "codegen.h"
 
 #define filenameSize 50
 
@@ -29,10 +28,6 @@ int main (int argc, char *argv[]) {
 		strcat(file,extension2);
 		//testScanner(file);
 		parser(file);
-		
-		//test();
-		//testpop();
-
 		//testScan(file);
 	}	
 

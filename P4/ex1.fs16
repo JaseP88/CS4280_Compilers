@@ -1,9 +1,5 @@
-Var milk::man
+Var a::b::c
 Begin
-	Var x
-	x ==11.
-	[x>10] Iff
-		Begin
-			Print[1].
-		End
+	Var a::g::z
+	Print[z].
 End
