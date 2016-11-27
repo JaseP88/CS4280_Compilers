@@ -32,7 +32,7 @@ node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope);
 node_t *assign(char *filename, tlk *tk, int level, Stack *s);
 
 
-node_t *RO(char *filename, tlk *tk, int level);
+node_t *RO(char *filename, tlk *tk, int level, int *relop);
 
 void errCond(char *nonterm, char *token, char *beforetk, int line);
 void exitAndDel(char *filename);

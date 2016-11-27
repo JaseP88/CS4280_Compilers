@@ -1,3 +1,6 @@
 Begin
-Print[[-4/2]+8+[-4*12]].
+	[2 =!= 2] Iff
+	Begin
+		Print[1].
+	End
 End

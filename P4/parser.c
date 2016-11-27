@@ -12,6 +12,8 @@
 
 char *asmfile = "target.asm";
 int maximumTemp = 0;
+int outcounter = 0;
+int condcounter = 0;
 
 /* auxillary function  <*/
 void parser(char *filename) {
@@ -586,16 +588,90 @@ node_t *out(char *filename, tlk *tk, int level, Stack *s) {
 /* <if> */
 node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
+
     node_t *node = getNode("<if>",level);
+
     int *targtemp = (int *)malloc(sizeof(int));
     *targtemp = 0;
 
+    int *relop = (int *)malloc(sizeof(int));
 
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
         node->child1 = expr(filename,tk,level,s,targtemp);
-        node->child2 = RO(filename,tk,level);
+        node->child2 = RO(filename,tk,level,relop);
         node->child3 = expr(filename,tk,level,s,targtemp);
+
+        char tempno[5];
+        int tempnum = *targtemp-1;
+        char outlabel[10];
+        char condlabel[10];
+
+        if (*relop == 0) {  //greater or equal to
+            sprintf(tempno,"t%d",tempnum-1);
+            targetInstructAlpha(asmfile,"LOAD",tempno);
+            sprintf(tempno,"t%d",tempnum);
+            targetInstructAlpha(asmfile,"SUB",tempno);
+            sprintf(outlabel,"out%d",outcounter);
+            targetInstructAlpha(asmfile,"BRNEG",outlabel);
+            outcounter++;
+        }
+
+        if (*relop == 2) {  //greater than
+            sprintf(tempno,"t%d",tempnum-1);
+            targetInstructAlpha(asmfile,"LOAD",tempno);
+            sprintf(tempno,"t%d",tempnum);
+            targetInstructAlpha(asmfile,"SUB",tempno);
+            sprintf(outlabel,"out%d",outcounter);
+            targetInstructAlpha(asmfile,"BRZNEG",outlabel);
+            outcounter++;
+        }
+
+        if (*relop == 1) {  //lesser or equal to
+            sprintf(tempno,"t%d",tempnum-1);
+            targetInstructAlpha(asmfile,"LOAD",tempno);
+            sprintf(tempno,"t%d",tempnum);
+            targetInstructAlpha(asmfile,"SUB",tempno);
+            sprintf(outlabel,"out%d",outcounter);
+            targetInstructAlpha(asmfile,"BRPOS",outlabel);
+            outcounter++;
+        }
+
+        if (*relop == 3) {  //lesser than
+            sprintf(tempno,"t%d",tempnum-1);
+            targetInstructAlpha(asmfile,"LOAD",tempno);
+            sprintf(tempno,"t%d",tempnum);
+            targetInstructAlpha(asmfile,"SUB",tempno);
+            sprintf(outlabel,"out%d",outcounter);
+            targetInstructAlpha(asmfile,"BRZPOS",outlabel);
+            outcounter++;
+        }   
+
+        if (*relop == 4) {  //equal to 
+            sprintf(tempno,"t%d",tempnum-1);
+            targetInstructAlpha(asmfile,"LOAD",tempno);
+            sprintf(tempno,"t%d",tempnum);
+            targetInstructAlpha(asmfile,"SUB",tempno);
+            sprintf(condlabel,"cond%d",condcounter);
+            targetInstructAlpha(asmfile,"BRZERO",condlabel);
+            sprintf(outlabel,"out%d",outcounter);
+            targetInstructAlpha(asmfile,"BR",outlabel);
+            targetLabel(asmfile,condlabel);
+            targetNoop(asmfile);
+            outcounter++;
+            condcounter++;
+        }
+
+        if (*relop == 5) {  //does not equal to
+            sprintf(tempno,"t%d",tempnum-1);
+            targetInstructAlpha(asmfile,"LOAD",tempno);
+            sprintf(tempno,"t%d",tempnum);
+            targetInstructAlpha(asmfile,"SUB",tempno);
+            sprintf(outlabel,"out%d",outcounter);
+            targetInstructAlpha(asmfile,"BRZERO",outlabel);
+            outcounter++;
+        }
+
         if (tk->tk_Id == RgtBracket_Tk) {
             scanner(filename,tk);
             if (tk->tk_Id == Iff_Tk) {
@@ -604,6 +680,10 @@ node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
                 scanner(filename,tk);
                 
                 node->child4 = block(filename,tk,level,s,scope);
+
+                targetLabel(asmfile,outlabel);
+                targetNoop(asmfile);
+
                 return node;
             }
             else
@@ -619,16 +699,21 @@ node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
 /* <loop> */
 node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
     level++;
+
     node_t *node = getNode("<loop>",level);
+
     int *targtemp = (int *)malloc(sizeof(int));
     *targtemp =0;
+
+    int *relop = (int *)malloc(sizeof(int));
+    *relop = 0;
 
     if (tk->tk_Id == Loop_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
-            node->child1 = expr(filename,tk,level,s, targtemp);
-            node->child2 = RO(filename,tk,level);
+            node->child1 = expr(filename,tk,level,s,targtemp);
+            node->child2 = RO(filename,tk,level,relop);
             node->child3 = expr(filename,tk,level,s, targtemp);
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
@@ -697,7 +782,7 @@ node_t *assign(char *filename, tlk *tk, int level, Stack *s) {
 }
 
 /* <RO> */
-node_t *RO(char *filename, tlk *tk, int level) {
+node_t *RO(char *filename, tlk *tk, int level, int *relop) {
     level++;
     tlk temp;
     node_t *node = getNode("<RO>",level);
@@ -706,36 +791,42 @@ node_t *RO(char *filename, tlk *tk, int level) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
+        *relop = 0;
         return node;
     }
     else if (tk->tk_Id == Lt_Eq_Tk) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
+        *relop = 1;
         return node;
     }
     else if (tk->tk_Id == Eq_Tk) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
+        *relop = 4;
         return node;
     }
     else if (tk->tk_Id == Gt_Tk) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
+        *relop = 2;
         return node;
     }
     else if (tk->tk_Id == Lt_Tk) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
+        *relop = 3;
         return node;
     }
     else if (tk->tk_Id == DnEq_Tk) {
         temp = *tk;
         node->tok = temp;
         scanner(filename,tk);
+        *relop = 5;
         return node;
     }
     else
