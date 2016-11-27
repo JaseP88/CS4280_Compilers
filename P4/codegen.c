@@ -69,6 +69,17 @@ void targetVarInit(char *filename, char *var, int num) {
 	fclose(fp);
 }
 
+void targetTempInit(char *filename, char *tempvar) {
+	FILE *fp;
+    if ((fp=fopen(filename,"a")) == NULL) {
+		fprintf(stderr,"error opening file %s\n",filename);
+		exit(1);
+	}
+
+	fprintf(fp, "%s 0\n",tempvar);
+	fclose(fp);
+}
+
 void targetInstructAlpha(char *filename, char *instruction, char *alpha) {
 	FILE *fp;
 	if ((fp=fopen(filename,"a")) == NULL) {

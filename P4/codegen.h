@@ -5,10 +5,11 @@ void targetPush (char *filename);
 void targetPop (char *filename);
 void targetInstructAlpha (char *filename, char *instruction, char *alpha);
 void targetInstructNum (char *filename, char *instruction, int num);
-void targetStop(char *filename);
-void targetNoop(char *filename);
-void targetLabel(char *filename, char *label);
-void targetVarInit(char *filename, char *var, int num);
+void targetStop (char *filename);
+void targetNoop (char *filename);
+void targetLabel (char *filename, char *label);
+void targetVarInit (char *filename, char *var, int num);
+void targetTempInit (char *filename, char *tempvar);
 
 
 

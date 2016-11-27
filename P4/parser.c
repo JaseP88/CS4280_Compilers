@@ -41,6 +41,8 @@ node_t *program(char *filename, tlk *tk) {
     int *varCount = (int *)malloc(sizeof(int));
     *varCount = 0;
 
+    char tempno[5];
+
     /* CREATE THE STACK FOR THE PROGRAM */
     Stack *stack = (Stack *)malloc(sizeof(Stack));
     initStack(stack);
@@ -50,6 +52,13 @@ node_t *program(char *filename, tlk *tk) {
  
     node->child2  = block(filename,tk,level,stack,scope);
     
+    //code gen stop
+    targetStop(asmfile);
+    for (i=0; i<=maximumTemp; i++) { //code gen storage allocation for temp vars using storage directive *after STOP*
+        sprintf(tempno,"t%d",i);
+        targetTempInit(asmfile,tempno);
+    }
+
 /* Maybe no need to pop global scopes???   
     //pop the global variables of fs16 language
     for (i=0; i<*varCount; i++) 
@@ -116,10 +125,10 @@ node_t *vars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int sc
             //originally varcount is 0 in all vars()
             push(node->instance,s);
             targetPush(asmfile);
+            targetInstructNum(asmfile,node->instance,0);
 
             *varcount+=1;   //increment the varcount for this identifier
            
-            
             scanner(filename,tk);
             node->child1 = mvars(filename,tk,level,varcount,s,scope);   //pass the varcount to mvars
            
@@ -160,7 +169,7 @@ node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int s
                     if (number == -1 || number >= *varcount) {
                         push(node->instance,s);
                         targetPush(asmfile);
-
+                        targetInstructNum(asmfile,node->instance,0);
                         *varcount+=1;
                         
                     }
@@ -332,6 +341,7 @@ node_t *F(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
 
         char tempno[5];
         int tempnum = *targtemp-1;
+
         sprintf(tempno,"t%d",tempnum);
         targetInstructAlpha(asmfile,"LOAD",tempno);
         targetInstructAlpha(asmfile,"MULT","2");
@@ -373,6 +383,10 @@ node_t *R(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     }
     else if (tk->tk_Id == Identifier_Tk) {
         int num;
+        char tempno[5]; 
+        int tempnum = *targtemp;
+        sprintf(tempno,"t%d",tempnum);
+
         temp = *tk;
         node->tok = temp;
         tempname = tk->tk_inst;
@@ -384,6 +398,13 @@ node_t *R(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
             printf("ERROR: var %s not found in scope, Line%d\n",node->instance,node->tok.line);
             exitAndDel(asmfile);
         }
+
+        targetInstructNum(asmfile,"STACKR",num);
+        targetInstructAlpha(asmfile,"STORE",tempno);
+        *targtemp+=1;
+
+        if (*targtemp > maximumTemp)
+            maximumTemp = *targtemp;
 
         scanner(filename,tk);
         return node;
@@ -402,6 +423,9 @@ node_t *R(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         targetInstructAlpha(asmfile, "LOAD", node->instance);
         targetInstructAlpha(asmfile, "STORE", tempno);
         *targtemp+=1;
+
+        if (*targtemp > maximumTemp)
+            maximumTemp = *targtemp;
 
         scanner(filename,tk);
         return node;
@@ -489,6 +513,7 @@ node_t *in(char *filename, tlk *tk, int level, Stack *s) {
             scanner(filename,tk);
             if (tk->tk_Id == Identifier_Tk) {
                 int num;
+                
                 temp = *tk;
                 node->tok = temp;
                 tempname = tk->tk_inst;
@@ -500,6 +525,10 @@ node_t *in(char *filename, tlk *tk, int level, Stack *s) {
                     printf("ERROR: var %s not found in scope, Line:%d\n",node->instance,node->tok.line);
                     exitAndDel(asmfile);
                 }
+
+                targetInstructAlpha(asmfile,"READ",node->instance);
+                targetInstructAlpha(asmfile,"LOAD",node->instance);
+                targetInstructNum(asmfile,"STACKW",num);
 
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
@@ -523,7 +552,7 @@ node_t *in(char *filename, tlk *tk, int level, Stack *s) {
 node_t *out(char *filename, tlk *tk, int level, Stack *s) {
     node_t *node = getNode("<out>",level);
     int *targtemp = (int *)malloc(sizeof(int));
-    *targtemp = 1;
+    *targtemp = 0;
 
 
     if (tk->tk_Id == Prnt_Tk) {
@@ -531,6 +560,8 @@ node_t *out(char *filename, tlk *tk, int level, Stack *s) {
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
             node->child1 = expr(filename,tk,level,s, targtemp);
+            targetInstructAlpha(asmfile,"WRITE","t0");
+
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
                 if (tk->tk_Id == Period_Tk) {
@@ -630,11 +661,12 @@ node_t *assign(char *filename, tlk *tk, int level, Stack *s) {
         tempname+=5;
         strcpy(node->instance,tempname);
 
-        if (find(node->instance,s) == -1) {
+        num = find(node->instance,s);
+        if (num == -1) {
             printf("ERROR: var %s not found in scope, Line%d\n",node->instance,node->tok.line);
             exitAndDel(asmfile);
         }
-
+   
         scanner(filename,tk);
         if (tk->tk_Id == DblEq_Tk) {
             temp2 = *tk;
@@ -645,6 +677,8 @@ node_t *assign(char *filename, tlk *tk, int level, Stack *s) {
             int *targtemp = (int *)malloc(sizeof(int));
             *targtemp = 0;
             node->child1 = expr(filename,tk,level,s,targtemp);
+            targetInstructAlpha(asmfile,"LOAD","t0");
+            targetInstructNum(asmfile,"STACKW",num);
             
             if (tk->tk_Id == Period_Tk) {
                 scanner(filename,tk);

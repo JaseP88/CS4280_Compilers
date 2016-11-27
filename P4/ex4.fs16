@@ -1,3 +1,5 @@
 Begin
-Print[-7*-3].
+Var a::b
+Scan:b.
+Print[b].
 End
