@@ -125,7 +125,7 @@ node_t *vars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int sc
             //originally varcount is 0 in all vars()
             push(node->instance,s);
             targetPush(asmfile);
-            targetInstructNum(asmfile,node->instance,0);
+            targetVarInit(asmfile,node->instance,0);
 
             *varcount+=1;   //increment the varcount for this identifier
            
@@ -169,7 +169,7 @@ node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int s
                     if (number == -1 || number >= *varcount) {
                         push(node->instance,s);
                         targetPush(asmfile);
-                        targetInstructNum(asmfile,node->instance,0);
+                        targetVarInit(asmfile,node->instance,0);
                         *varcount+=1;
                         
                     }
@@ -263,6 +263,7 @@ node_t *N(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         targetInstructAlpha(asmfile,"SUB",tempno);
         sprintf(tempno,"t%d",tempnum-1);
         targetInstructAlpha(asmfile,"STORE",tempno);
+        *targtemp-=1;
 
         return node;
     }
@@ -320,6 +321,7 @@ node_t *X(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         targetInstructAlpha(asmfile,"DIV",tempno);
         sprintf(tempno,"t%d",tempnum-1);
         targetInstructAlpha(asmfile,"STORE",tempno);
+        *targtemp-=1;
 
         return node;
     }

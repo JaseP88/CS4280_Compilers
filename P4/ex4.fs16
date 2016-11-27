@@ -1,5 +1,3 @@
 Begin
-Var a::b
-Scan:b.
-Print[b].
+Print[[-4/2]+8+[-4*12]].
 End
