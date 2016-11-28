@@ -2,12 +2,14 @@
 #include <stdlib.h>
 
 #include "codegen.h"
+#include "parser.h"
 
 void targetPush(char *filename) {
     FILE *fp;
 	if ((fp=fopen(filename,"a")) == NULL) {
 		fprintf(stderr,"error opening file %s\n",filename);
-		exit(1);
+		//exit(1);
+		exitAndDel(filename);
 	}
 
 	fprintf(fp, "PUSH\n");
@@ -18,7 +20,8 @@ void targetPop(char *filename) {
     FILE *fp;
     if ((fp=fopen(filename,"a")) == NULL) {
 		fprintf(stderr,"error opening file %s\n",filename);
-		exit(1);
+		//exit(1);
+		exitAndDel(filename);
 	}
 
 	fprintf(fp, "POP\n");
@@ -29,7 +32,8 @@ void targetStop(char *filename) {
 	FILE *fp;
     if ((fp=fopen(filename,"a")) == NULL) {
 		fprintf(stderr,"error opening file %s\n",filename);
-		exit(1);
+		//exit(1);
+		exitAndDel(filename);
 	}
 
 	fprintf(fp, "STOP\n");
@@ -40,7 +44,8 @@ void targetNoop(char *filename) {
 	FILE *fp;
     if ((fp=fopen(filename,"a")) == NULL) {
 		fprintf(stderr,"error opening file %s\n",filename);
-		exit(1);
+		//exit(1);
+		exitAndDel(filename);
 	}
 
 	fprintf(fp, "NOOP\n");
@@ -51,7 +56,8 @@ void targetLabel(char *filename, char *label) {
 	FILE *fp;
     if ((fp=fopen(filename,"a")) == NULL) {
 		fprintf(stderr,"error opening file %s\n",filename);
-		exit(1);
+		//exit(1);
+		exitAndDel(filename);
 	}
 
 	fprintf(fp, "%s: ",label);
@@ -62,7 +68,8 @@ void targetVarInit(char *filename, char *var, int num) {
 	FILE *fp;
     if ((fp=fopen(filename,"a")) == NULL) {
 		fprintf(stderr,"error opening file %s\n",filename);
-		exit(1);
+		//exit(1);
+		exitAndDel(filename);
 	}
 
 	fprintf(fp, "%s %d\n",var,num);
@@ -73,7 +80,8 @@ void targetTempInit(char *filename, char *tempvar) {
 	FILE *fp;
     if ((fp=fopen(filename,"a")) == NULL) {
 		fprintf(stderr,"error opening file %s\n",filename);
-		exit(1);
+		//exit(1);
+		exitAndDel(filename);
 	}
 
 	fprintf(fp, "%s 0\n",tempvar);
@@ -84,7 +92,8 @@ void targetInstructAlpha(char *filename, char *instruction, char *alpha) {
 	FILE *fp;
 	if ((fp=fopen(filename,"a")) == NULL) {
 		fprintf(stderr,"error opening file %s\n",filename);
-		exit(1);
+		//exit(1);
+		exitAndDel(filename);
 	}
 
 	fprintf(fp, "%s %s\n",instruction,alpha);
@@ -95,7 +104,8 @@ void targetInstructNum(char *filename, char *instruction, int num) {
 	FILE *fp;
 	if ((fp=fopen(filename,"a")) == NULL) {
 		fprintf(stderr,"error opening file %s\n",filename);
-		exit(1);
+		//exit(1);
+		exitAndDel(filename);
 	}
 
 	fprintf(fp, "%s %d\n",instruction,num);
@@ -109,7 +119,7 @@ void targetInstructNum(char *filename, char *instruction, int num) {
 
 
 
-
+/* UNUSED */
 void targetStackR(char *filename, int pos) {
 	FILE *fp;
 	if ((fp=fopen(filename,"a")) == NULL) {

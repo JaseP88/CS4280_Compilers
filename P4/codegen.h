@@ -16,7 +16,7 @@ void targetTempInit (char *filename, char *tempvar);
 
 
 
-
+/* Unused */
 void targetStackR (char *filename, int pos);
 void targetStackW (char *filename, int pos);
 void targetLoadAL (char *filename, char *alpha);
