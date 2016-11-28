@@ -47,15 +47,13 @@ node_t *program(char *filename, tlk *tk) {
     int *varCount = (int *)malloc(sizeof(int));
     *varCount = 0;
 
-    char tempno[5];
+    char tempno[10];
 
     /* CREATE THE STACK FOR THE PROGRAM */
     Stack *stack = (Stack *)malloc(sizeof(Stack));
     initStack(stack);
-    
-    
+
     node->child1 =  vars(filename,tk,level,varCount,stack,scope); 
- 
     node->child2  = block(filename,tk,level,stack,scope);
     
     //code gen stop
@@ -82,8 +80,7 @@ node_t *block(char *filename, tlk *tk, int level, Stack *s, int scope) {
     node_t *node = getNode("<block>",level);   //create node for <block> and label it
 
     int *varCount = (int *)malloc(sizeof(int)); //create the varCount for each block scope
-    *varCount = 0;  //init set the varCount to 0
-
+    *varCount = 0;  //init set the varCount to 0 for this block
     
     if (tk->tk_Id == Bgn_Tk) {  //structural token no need to store
         scanner(filename,tk);   //consume the token and get new token
@@ -95,7 +92,7 @@ node_t *block(char *filename, tlk *tk, int level, Stack *s, int scope) {
             //pop the instance of each block when done
             for (i=0; i<*varCount; i++)  {
                 pop(s);
-                targetPop(asmfile);
+                targetPop(asmfile); //codegen pop
             }
             scanner(filename,tk);
             return node; 
@@ -125,17 +122,18 @@ node_t *vars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int sc
             node->tok = temp;
             
             tempname = tk->tk_inst;
-            tempname+=5;
+            tempname+=5;    //only take the name (removed string "idtk:")
             strcpy(node->instance,tempname);
             
             //originally varcount is 0 in all vars()
             push(node->instance,s);
             targetPush(asmfile);
             
+            // checks if there are duplicate var out of this block scope
+            // returns 1 if there is only 1 instance of the variable in stack
             int numofvar = varcounter(node->instance,s);
-            
-            if (numofvar == 1)  //check if duplicate var out of scope
-                targetVarInit(asmfile,node->instance,0);
+            if (numofvar == 1)  
+                targetVarInit(asmfile,node->instance,0);    //disables multiple var init in codegen
 
             *varcount+=1;   //increment the varcount for this identifier
            
@@ -230,7 +228,7 @@ node_t *rpxe(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         scanner(filename,tk);
         node->child1 = expr(filename,tk,level,s,targtemp);
 
-        char tempno[5];
+        char tempno[10];
         int tempnum = *targtemp-1;
 
         sprintf(tempno,"t%d",tempnum-1);
@@ -269,7 +267,7 @@ node_t *N(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         scanner(filename,tk);
         node->child1 = M(filename,tk,level,s, targtemp);
 
-        char tempno[5];
+        char tempno[10];
         int tempnum = *targtemp-1;
 
         sprintf(tempno,"t%d",tempnum-1);
@@ -308,7 +306,7 @@ node_t *X(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         scanner(filename,tk);
         node->child1 = T(filename,tk,level,s,targtemp);
 
-        char tempno[5];
+        char tempno[10];
         int tempnum = *targtemp-1;
         
         sprintf(tempno,"t%d",tempnum-1);
@@ -327,7 +325,7 @@ node_t *X(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         scanner(filename,tk);
         node->child1 = T(filename,tk,level,s,targtemp);
 
-        char tempno[5];
+        char tempno[10];
         int tempnum = *targtemp-1;
         
         sprintf(tempno,"t%d",tempnum-1);
@@ -356,7 +354,7 @@ node_t *F(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         scanner(filename,tk);
         node->child1 = F(filename,tk,level,s,targtemp);
 
-        char tempno[5];
+        char tempno[10];
         int tempnum = *targtemp-1;
 
         sprintf(tempno,"t%d",tempnum);
@@ -387,10 +385,9 @@ node_t *R(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     node_t *node = getNode("<R>",level);
     node->instance = (char *)malloc(24);
 
-    if (tk->tk_Id == LftBracket_Tk) {
+    if (tk->tk_Id == LftBracket_Tk) {   // if expr is [<expr>]
         scanner(filename,tk);
         node->child1 = expr(filename,tk,level,s,targtemp);
-     
         if (tk->tk_Id == RgtBracket_Tk) {
             scanner(filename,tk);
             return node;
@@ -398,9 +395,10 @@ node_t *R(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         else
             errCond("R","]",tk->tk_inst,tk->line);
     }
-    else if (tk->tk_Id == Identifier_Tk) {
+
+    else if (tk->tk_Id == Identifier_Tk) {  // if expr is an identifier
         int num;
-        char tempno[5]; 
+        char tempno[10]; 
         int tempnum = *targtemp;
         sprintf(tempno,"t%d",tempnum);
 
@@ -420,14 +418,14 @@ node_t *R(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
         targetInstructAlpha(asmfile,"STORE",tempno);
         *targtemp+=1;
 
-        if (*targtemp > maximumTemp)
+        if (*targtemp > maximumTemp)    //updates maximumTemp global to allow for temp var storage after STOP
             maximumTemp = *targtemp;
 
         scanner(filename,tk);
         return node;
     }
     else if (tk->tk_Id == IntLiteral_Tk) {
-        char tempno[5]; 
+        char tempno[10]; 
         int tempnum = *targtemp;
         sprintf(tempno,"t%d",tempnum);
 
@@ -548,6 +546,7 @@ node_t *in(char *filename, tlk *tk, int level, Stack *s) {
                 targetInstructNum(asmfile,"STACKW",num);
 
                 scanner(filename,tk);
+
                 if (tk->tk_Id == Period_Tk) {
                     scanner(filename,tk);
                     return node;
@@ -571,13 +570,14 @@ node_t *out(char *filename, tlk *tk, int level, Stack *s) {
     int *targtemp = (int *)malloc(sizeof(int));
     *targtemp = 0;
 
-
     if (tk->tk_Id == Prnt_Tk) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
+            
             node->child1 = expr(filename,tk,level,s, targtemp);
-            targetInstructAlpha(asmfile,"WRITE","t0");
+            
+            targetInstructAlpha(asmfile,"WRITE","t0");  //might cause trouble?
 
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
@@ -607,7 +607,7 @@ node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
     int *targtemp = (int *)malloc(sizeof(int));
     *targtemp = 0;
 
-    int *relop = (int *)malloc(sizeof(int));
+    int *relop = (int *)malloc(sizeof(int));    //used to determine which relational op used
 
     if (tk->tk_Id == LftBracket_Tk) {
         scanner(filename,tk);
@@ -615,7 +615,7 @@ node_t *if_(char *filename, tlk *tk, int level, Stack *s, int scope) {
         node->child2 = RO(filename,tk,level,relop);
         node->child3 = expr(filename,tk,level,s,targtemp);
 
-        char tempno[5];
+        char tempno[10];
         int tempnum = *targtemp-1;
         char outlabel[10];
         char condlabel[10];
@@ -735,7 +735,7 @@ node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
             node->child2 = RO(filename,tk,level,relop);
             node->child3 = expr(filename,tk,level,s, targtemp);
 
-            char tempno[5];
+            char tempno[10];
             int tempnum = *targtemp-1;
             char outlabel[10];
             char condlabel[10];
@@ -796,7 +796,6 @@ node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
                 targetInstructAlpha(asmfile,"BR",outlabel);
                 targetLabel(asmfile,condlabel);
                 targetNoop(asmfile);
-            
                 outcounter++;
                 loopcounter++;
                 condcounter++;
@@ -866,7 +865,9 @@ node_t *assign(char *filename, tlk *tk, int level, Stack *s) {
             
             int *targtemp = (int *)malloc(sizeof(int));
             *targtemp = 0;
+            
             node->child1 = expr(filename,tk,level,s,targtemp);
+
             targetInstructAlpha(asmfile,"LOAD","t0");
             targetInstructNum(asmfile,"STACKW",num);
             
