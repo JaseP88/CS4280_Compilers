@@ -13,6 +13,7 @@ void push(char *var, Stack *s);
 void pop(Stack *s);
 char *top(Stack *s);
 int find(char *var, Stack *s);
+int varcounter(char *var, Stack *s);
 void printstack(Stack *s);
 
 

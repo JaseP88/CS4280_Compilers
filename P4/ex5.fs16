@@ -1,0 +1,9 @@
+Var a::b
+	Begin
+	Var a::b
+	Print[a].
+		Begin
+		Var b::c
+		Scan:c.
+		End
+	End

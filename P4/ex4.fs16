@@ -1,6 +1,10 @@
 Begin
-	[2 =!= 2] Iff
+	Var x::b
+	b==1.
+	x==9.
+	Loop[x=!=10]
 	Begin
-		Print[1].
+		Print[b].
+		b==b+1.
 	End
-End
+End	

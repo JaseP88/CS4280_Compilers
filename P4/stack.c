@@ -57,6 +57,26 @@ int find(char *var, Stack *s) {
     return -1;  //return -1 if didnt find
 }
 
+int varcounter(char *var, Stack *s) {
+    int i;
+    int varcounter = 0;
+    int top_size = s->size;
+    /*
+    while (top_size > -1) {
+        if (strcmp(var, s->variable[top_size]) == 0)  {
+            varcounter++;   
+            top_size--;
+        }
+    }*/
+    for (i=0; i<=top_size; i++) {
+        if (strcmp(var, s->variable[i]) == 0) {
+            varcounter++;
+        }
+    }
+    return varcounter;
+}
+
+
 //bad function
 void printstack(Stack *s) {
     int i;

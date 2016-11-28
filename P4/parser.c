@@ -10,10 +10,14 @@
 #include "treePrint.h"
 #include "codegen.h"
 
-char *asmfile = "target.asm";
+char *asmfile = "target.asm";   //the target file produced
+
+/* contain counters for tempvars 
+and labels for branching */
 int maximumTemp = 0;
 int outcounter = 0;
 int condcounter = 0;
+int loopcounter = 0;
 
 /* auxillary function  <*/
 void parser(char *filename) {
@@ -127,7 +131,11 @@ node_t *vars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int sc
             //originally varcount is 0 in all vars()
             push(node->instance,s);
             targetPush(asmfile);
-            targetVarInit(asmfile,node->instance,0);
+            
+            int numofvar = varcounter(node->instance,s);
+            
+            if (numofvar == 1)  //check if duplicate var out of scope
+                targetVarInit(asmfile,node->instance,0);
 
             *varcount+=1;   //increment the varcount for this identifier
            
@@ -171,7 +179,11 @@ node_t *mvars(char *filename, tlk *tk, int level, int *varcount, Stack *s, int s
                     if (number == -1 || number >= *varcount) {
                         push(node->instance,s);
                         targetPush(asmfile);
-                        targetVarInit(asmfile,node->instance,0);
+                        
+                        int numofvar = varcounter(node->instance,s);
+                        if (numofvar == 1)  //no duplicate var outside scope
+                            targetVarInit(asmfile,node->instance,0);
+                        
                         *varcount+=1;
                         
                     }
@@ -214,6 +226,7 @@ node_t *rpxe(char *filename, tlk *tk, int level, Stack *s, int *targtemp) {
     if (tk->tk_Id == Plus_Tk) {
         temp = *tk;
         node->tok = temp;
+
         scanner(filename,tk);
         node->child1 = expr(filename,tk,level,s,targtemp);
 
@@ -712,13 +725,103 @@ node_t *loop(char *filename, tlk *tk, int level, Stack *s, int scope) {
         scanner(filename,tk);
         if (tk->tk_Id == LftBracket_Tk) {
             scanner(filename,tk);
+
+            char looplabel[10];
+            sprintf(looplabel,"loop%d",loopcounter);
+            targetLabel(asmfile,looplabel);
+            targetNoop(asmfile);
+
             node->child1 = expr(filename,tk,level,s,targtemp);
             node->child2 = RO(filename,tk,level,relop);
             node->child3 = expr(filename,tk,level,s, targtemp);
+
+            char tempno[5];
+            int tempnum = *targtemp-1;
+            char outlabel[10];
+            char condlabel[10];
+
+            if (*relop == 0) {  //greater or equal to
+                sprintf(tempno,"t%d",tempnum-1);
+                targetInstructAlpha(asmfile,"LOAD",tempno);
+                sprintf(tempno,"t%d",tempnum);
+                targetInstructAlpha(asmfile,"SUB",tempno);
+                sprintf(outlabel,"out%d",outcounter);
+                targetInstructAlpha(asmfile,"BRNEG",outlabel); 
+                outcounter++;
+                loopcounter++;
+            }
+
+            if (*relop == 2) {  //greater than
+
+                sprintf(tempno,"t%d",tempnum-1);
+                targetInstructAlpha(asmfile,"LOAD",tempno);
+                sprintf(tempno,"t%d",tempnum);
+                targetInstructAlpha(asmfile,"SUB",tempno);
+                sprintf(outlabel,"out%d",outcounter);
+                targetInstructAlpha(asmfile,"BRZNEG",outlabel); 
+                outcounter++;
+                loopcounter++;
+            }
+
+            if (*relop == 1) {  //lesser or equal to
+                sprintf(tempno,"t%d",tempnum-1);
+                targetInstructAlpha(asmfile,"LOAD",tempno);
+                sprintf(tempno,"t%d",tempnum);
+                targetInstructAlpha(asmfile,"SUB",tempno);
+                sprintf(outlabel,"out%d",outcounter);
+                targetInstructAlpha(asmfile,"BRPOS",outlabel);    
+                outcounter++;
+                loopcounter++;
+            }
+
+            if (*relop == 3) {   //less than
+                sprintf(tempno,"t%d",tempnum-1);
+                targetInstructAlpha(asmfile,"LOAD",tempno);
+                sprintf(tempno,"t%d",tempnum);
+                targetInstructAlpha(asmfile,"SUB",tempno);
+                sprintf(outlabel,"out%d",outcounter);
+                targetInstructAlpha(asmfile,"BRZPOS",outlabel);
+                outcounter++;
+                loopcounter++;
+            }
+
+            if (*relop == 4) {  //equal to
+                sprintf(tempno,"t%d",tempnum-1);
+                targetInstructAlpha(asmfile,"LOAD",tempno);
+                sprintf(tempno,"t%d",tempnum);
+                targetInstructAlpha(asmfile,"SUB",tempno);
+                sprintf(condlabel,"cond%d",condcounter);
+                targetInstructAlpha(asmfile,"BRZERO",condlabel);
+                sprintf(outlabel,"out%d",outcounter);
+                targetInstructAlpha(asmfile,"BR",outlabel);
+                targetLabel(asmfile,condlabel);
+                targetNoop(asmfile);
+            
+                outcounter++;
+                loopcounter++;
+                condcounter++;
+            }
+
+            if (*relop == 5) {  //does not equal to
+                sprintf(tempno,"t%d",tempnum-1);
+                targetInstructAlpha(asmfile,"LOAD",tempno);
+                sprintf(tempno,"t%d",tempnum);
+                targetInstructAlpha(asmfile,"SUB",tempno);
+                sprintf(outlabel,"out%d",outcounter);
+                targetInstructAlpha(asmfile,"BRZERO",outlabel);
+                outcounter++;
+                loopcounter++;
+            }
+
             if (tk->tk_Id == RgtBracket_Tk) {
                 scanner(filename,tk);
                  
                 node->child4 = block(filename,tk,level,s,scope);
+
+                targetInstructAlpha(asmfile,"BR",looplabel);
+                targetLabel(asmfile,outlabel);
+                targetNoop(asmfile);
+
                 return node;
             }
             else
