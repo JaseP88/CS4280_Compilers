@@ -1,0 +1,13 @@
+Begin
+	Var count::n::fact
+	fact==1.
+	count==1.
+	n==6.
+	Loop[count<=<n]
+	Begin
+		fact== fact*count.
+		count==count+1.
+	End
+
+	Print[fact].
+End
