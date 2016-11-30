@@ -1,0 +1,20 @@
+Begin
+	Var a::b
+  
+	Scan:a.
+  
+	[a>0] Iff
+	Begin
+		b==0.
+		Loop[b<=<a]
+		Begin
+			Print[b].
+			b==b+1.
+		End
+	End
+
+	[a=0] Iff
+	Begin
+		Print[0].
+	End
+End		

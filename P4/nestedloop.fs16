@@ -1,15 +1,16 @@
 Begin 
-	Var a::b
+	Var a
 	a==0.
 	Loop[a<5]
 	Begin
 		Var b
-		b==10.
+		b == 10.
 		Loop[b>5]
 		Begin
 			Print[b].
 			b==b-1.
 		End
 	Print[a].
+	a==a+1.
 	End
 End

@@ -2,7 +2,7 @@ Begin
 	Var count::n::fact
 	fact==1.
 	count==1.
-	n==6.
+	Scan:n.
 	Loop[count<=<n]
 	Begin
 		fact== fact*count.

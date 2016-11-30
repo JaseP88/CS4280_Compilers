@@ -1,0 +1,15 @@
+Begin
+	Var a::b
+	Scan:a.
+	[a<0] Iff
+	Begin
+		b==-a.
+	End
+	[a>=>0] Iff
+	Begin
+		b==a.
+	End
+	a==a*a.
+	a==a/b.
+	Print[a].
+End
